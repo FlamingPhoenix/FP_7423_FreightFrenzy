@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name="Alan", group = "none")
 
@@ -18,6 +21,8 @@ public class Teamalan extends LinearOpMode {
 
     public float diameter = 4;
 
+    public BNO055IMU imu;
+
     public void initialize (){
         fl = hardwareMap.dcMotor.get("frontleft");
         fr = hardwareMap.dcMotor.get("frontright");
@@ -26,6 +31,10 @@ public class Teamalan extends LinearOpMode {
 
         fr.setDirection(DcMotorSimple.Direction.REVERSE);
         br.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu1");
+        imu.initialize(new BNO055IMU.Parameters());
+
     }
 
     public void Drive (float power, float distance) {
@@ -49,6 +58,37 @@ public class Teamalan extends LinearOpMode {
         fr.setPower(0);
         bl.setPower(0);
         br.setPower(0);
+
+    }
+
+    public void Turn (float power, int angle, BNO055IMU imu) {
+
+        Orientation startOrientation = imu.getAngularOrientation();
+
+        float targetangle;
+        float currentangle;
+
+
+
+        targetangle = startOrientation.firstAngle + angle;
+        currentangle = startOrientation.firstAngle;
+
+        while (currentangle < targetangle && opModeIsActive()) {
+
+            currentangle = imu.getAngularOrientation().firstAngle;
+
+            fl.setPower(-power);
+            bl.setPower(-power);
+            fr.setPower(power);
+            br.setPower(power);
+
+
+        }
+        fl.setPower(0);
+        fr.setPower(0);
+        bl.setPower(0);
+        br.setPower(0);
+
 
     }
 
