@@ -33,7 +33,9 @@ public class Teamalan extends LinearOpMode {
         br.setDirection(DcMotorSimple.Direction.REVERSE);
 
         imu = hardwareMap.get(BNO055IMU.class, "imu1");
-        imu.initialize(new BNO055IMU.Parameters());
+        BNO055IMU.Parameters p = new BNO055IMU.Parameters();
+        p.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        imu.initialize(p);
 
     }
 
@@ -47,7 +49,7 @@ public class Teamalan extends LinearOpMode {
         int currentPosition = 0;
 
         while (currentPosition < targetEncoderValue && opModeIsActive()) {
-            currentPosition = (Math.abs(bl.getCurrentPosition()));
+            currentPosition = Math.abs(bl.getCurrentPosition());
             fl.setPower(power);
             fr.setPower(power);
             bl.setPower(power);
@@ -63,12 +65,11 @@ public class Teamalan extends LinearOpMode {
 
     public void Turn (float power, int angle, BNO055IMU imu) {
 
+
         Orientation startOrientation = imu.getAngularOrientation();
 
         float targetangle;
         float currentangle;
-
-
 
         targetangle = startOrientation.firstAngle + angle;
         currentangle = startOrientation.firstAngle;
@@ -77,10 +78,13 @@ public class Teamalan extends LinearOpMode {
 
             currentangle = imu.getAngularOrientation().firstAngle;
 
-            fl.setPower(-power);
-            bl.setPower(-power);
-            fr.setPower(power);
-            br.setPower(power);
+            this.telemetry.addData("CurrentAngle =: %f", currentangle);
+            this.telemetry.update();
+
+            fl.setPower(power);
+            bl.setPower(power);
+            fr.setPower(-power);
+            br.setPower(-power);
 
 
         }
@@ -96,6 +100,8 @@ public class Teamalan extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         initialize();
         waitForStart();
-        Drive(0.5f, 24);
+        Drive(0.5f,10);
+        sleep(1000);
+        Drive(-0.5f,24);
     }
 }
