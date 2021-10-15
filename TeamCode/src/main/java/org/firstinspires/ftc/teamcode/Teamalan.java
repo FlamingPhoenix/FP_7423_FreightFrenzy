@@ -36,7 +36,6 @@ public class Teamalan extends LinearOpMode {
         BNO055IMU.Parameters p = new BNO055IMU.Parameters();
         p.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(p);
-
     }
 
     public void Drive (float power, float distance) {
