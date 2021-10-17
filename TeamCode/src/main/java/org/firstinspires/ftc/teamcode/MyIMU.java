@@ -25,13 +25,13 @@ public class MyIMU implements BNO055IMU {
 
     //Constructor
     public MyIMU(HardwareMap hardwareMap) {
-        myIMU = hardwareMap.get(BNO055IMU.class, "imu1");
+        myIMU = hardwareMap.get(BNO055IMU.class, "imu");
     }
 
     public boolean initialize(Parameters parameters) {
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
 
-        return true;
+        return myIMU.initialize((parameters));
     }
 
     public void reset(Direction turnDirection) {
