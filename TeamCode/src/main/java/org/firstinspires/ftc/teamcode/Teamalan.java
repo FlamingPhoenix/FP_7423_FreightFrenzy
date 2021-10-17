@@ -62,7 +62,7 @@ public class Teamalan extends LinearOpMode {
 
     }
 
-    public void Turn (float power, int angle, BNO055IMU imu) {
+    public void Turn (float power, int angle, Direction turnDirection, MyIMU imu) {
 
 
         Orientation startOrientation = imu.getAngularOrientation();
@@ -70,23 +70,47 @@ public class Teamalan extends LinearOpMode {
         float targetangle;
         float currentangle;
 
-        targetangle = startOrientation.firstAngle + angle;
-        currentangle = startOrientation.firstAngle;
+        imu.reset(turnDirection);
+        if (turnDirection == Direction.COUNTERCLOCKWISE) {
 
-        while (currentangle < targetangle && opModeIsActive()) {
+            targetangle = startOrientation.firstAngle + angle;
+            currentangle = startOrientation.firstAngle;
 
-            currentangle = imu.getAngularOrientation().firstAngle;
+            while (currentangle < targetangle && opModeIsActive()) {
 
-            this.telemetry.addData("CurrentAngle =: %f", currentangle);
-            this.telemetry.update();
+                currentangle = imu.getAdjustedAngle();
 
-            fl.setPower(power);
-            bl.setPower(power);
-            fr.setPower(-power);
-            br.setPower(-power);
+                this.telemetry.addData("CurrentAngle =: %f", currentangle);
+                this.telemetry.update();
 
-
+                fl.setPower(-power);
+                bl.setPower(-power);
+                fr.setPower(power);
+                br.setPower(power);
+            }
         }
+
+        else {
+
+            targetangle = startOrientation.firstAngle - angle;
+            currentangle = startOrientation.firstAngle;
+
+            while (currentangle > targetangle && opModeIsActive()) {
+
+                currentangle = imu.getAdjustedAngle();
+
+                this.telemetry.addData("CurrentAngle =: %f", currentangle);
+                this.telemetry.update();
+
+                fl.setPower(power);
+                bl.setPower(power);
+                fr.setPower(-power);
+                br.setPower(-power);
+
+
+            }
+        }
+
         fl.setPower(0);
         fr.setPower(0);
         bl.setPower(0);

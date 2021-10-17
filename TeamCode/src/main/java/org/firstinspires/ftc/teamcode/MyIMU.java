@@ -21,6 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 public class MyIMU implements BNO055IMU {
     public Orientation startOrientation;
     private BNO055IMU myIMU;
+    private Direction _direction;
 
     //Constructor
     public MyIMU(HardwareMap hardwareMap) {
@@ -33,22 +34,22 @@ public class MyIMU implements BNO055IMU {
         return true;
     }
 
-    public void reset() {
+    public void reset(Direction turnDirection) {
         startOrientation = myIMU.getAngularOrientation();
+        _direction = turnDirection;
     }
 
-    public Orientation getAngularOrientation() {
+    public float getAdjustedAngle() {
 
-        Orientation currentOrientation = myIMU.getAngularOrientation();
+        float currentAngle = myIMU.getAngularOrientation().firstAngle;
 
-        if (startOrientation.firstAngle > 0 && currentOrientation.firstAngle < 0) {
-            currentOrientation.firstAngle += 360;
-        } else if(startOrientation.firstAngle < 0 && currentOrientation.firstAngle > 0) {
-            currentOrientation.firstAngle -= 360;
+        if (startOrientation.firstAngle > 0 && currentAngle < 0 && _direction == Direction.COUNTERCLOCKWISE) {
+            currentAngle += 360;
+        } else if(startOrientation.firstAngle < 0 && currentAngle > 0 && _direction == Direction.CLOCKWISE) {
+            currentAngle -= 360;
         }
 
-        return currentOrientation;
-
+        return currentAngle;
     }
 
     @NonNull
@@ -60,6 +61,11 @@ public class MyIMU implements BNO055IMU {
     @Override
     public void close() {
         myIMU.close();
+    }
+
+    @Override
+    public Orientation getAngularOrientation() {
+        return myIMU.getAngularOrientation();
     }
 
     @Override
