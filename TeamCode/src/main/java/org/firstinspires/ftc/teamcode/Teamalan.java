@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -21,7 +23,7 @@ public class Teamalan extends LinearOpMode {
 
     public float diameter = 4;
 
-    public BNO055IMU imu;
+    public MyIMU imu;
 
     public void initialize (){
         fl = hardwareMap.dcMotor.get("frontleft");
@@ -32,9 +34,8 @@ public class Teamalan extends LinearOpMode {
         fr.setDirection(DcMotorSimple.Direction.REVERSE);
         br.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        imu = hardwareMap.get(BNO055IMU.class, "imu1");
+        imu = new MyIMU(hardwareMap);
         BNO055IMU.Parameters p = new BNO055IMU.Parameters();
-        p.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(p);
     }
 
@@ -80,8 +81,7 @@ public class Teamalan extends LinearOpMode {
 
                 currentangle = imu.getAdjustedAngle();
 
-                this.telemetry.addData("CurrentAngle =: %f", currentangle);
-                this.telemetry.update();
+                Log.i("[pheonix:angleInfo]", String.format("startingAngle = %f, targetAngle = %f, currentAngle = %f", startOrientation.firstAngle, targetangle, currentangle));
 
                 fl.setPower(-power);
                 bl.setPower(-power);
@@ -123,8 +123,12 @@ public class Teamalan extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         initialize();
         waitForStart();
-        Drive(0.5f,10);
-        sleep(1000);
-        Drive(-0.5f,24);
+        Turn(0.5f, 90, Direction.CLOCKWISE, imu);
+        sleep(500);
+        Turn(0.5f, 90, Direction.CLOCKWISE, imu);
+        sleep(500);
+        Turn(0.5f, 90, Direction.CLOCKWISE, imu);
+        sleep(500);
+        Turn(0.5f, 135, Direction.COUNTERCLOCKWISE, imu);
     }
 }

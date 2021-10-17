@@ -25,7 +25,7 @@ public class MyIMU implements BNO055IMU {
 
     //Constructor
     public MyIMU(HardwareMap hardwareMap) {
-        myIMU = hardwareMap.get(BNO055IMU.class, "imu");
+        myIMU = hardwareMap.get(BNO055IMU.class, "imu1");
     }
 
     public boolean initialize(Parameters parameters) {
