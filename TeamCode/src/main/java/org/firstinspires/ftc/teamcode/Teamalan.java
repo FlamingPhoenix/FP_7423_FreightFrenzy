@@ -81,7 +81,7 @@ public class Teamalan extends LinearOpMode {
 
                 currentangle = imu.getAdjustedAngle();
 
-                Log.i("[pheonix:angleInfo]", String.format("startingAngle = %f, targetAngle = %f, currentAngle = %f", startOrientation.firstAngle, targetangle, currentangle));
+                Log.i("[pheonix:angleInfo]", String.format("startingAngle = %f, targetAngl = %f, currentAngle = %f", startOrientation.firstAngle, targetangle, currentangle));
 
                 fl.setPower(-power);
                 bl.setPower(-power);
