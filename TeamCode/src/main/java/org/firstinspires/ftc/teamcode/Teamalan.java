@@ -39,6 +39,13 @@ public class Teamalan extends LinearOpMode {
         imu.initialize(p);
     }
 
+    public void StopAll() {
+        fl.setPower(0);
+        fr.setPower(0);
+        bl.setPower(0);
+        br.setPower(0);
+    }
+
     public void Drive (float power, float distance) {
         float x = (PPR * distance)/(diameter * (float)Math.PI);
 
@@ -56,10 +63,7 @@ public class Teamalan extends LinearOpMode {
             br.setPower(power);
         }
 
-        fl.setPower(0);
-        fr.setPower(0);
-        bl.setPower(0);
-        br.setPower(0);
+        StopAll();
 
     }
 
@@ -111,11 +115,41 @@ public class Teamalan extends LinearOpMode {
             }
         }
 
-        fl.setPower(0);
-        fr.setPower(0);
-        bl.setPower(0);
-        br.setPower(0);
+        StopAll();
 
+    }
+
+    public void Strafe(float power, float distance, Direction d) {
+        float x = (PPR * (2 * distance))/(diameter * (float)Math.PI);
+
+        int targetEncoderValue = Math.round(x);
+
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        int currentPosition = 0;
+
+        if (d == Direction.LEFT) {
+            while (currentPosition < targetEncoderValue && opModeIsActive()) {
+                currentPosition = Math.abs(bl.getCurrentPosition());
+                fl.setPower(power);
+                fr.setPower(-power);
+                bl.setPower(-power);
+                br.setPower(power);
+            }
+        } else {
+            while (currentPosition < targetEncoderValue && opModeIsActive()) {
+                currentPosition = Math.abs(bl.getCurrentPosition());
+                fl.setPower(-power);
+                fr.setPower(power);
+                bl.setPower(power);
+                br.setPower(-power);
+            }
+        }
+
+        StopAll();
+    }
+
+    public void Duckies () {
 
     }
 
@@ -123,12 +157,6 @@ public class Teamalan extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         initialize();
         waitForStart();
-        Turn(0.5f, 90, Direction.CLOCKWISE, imu);
-        sleep(500);
-        Turn(0.5f, 90, Direction.CLOCKWISE, imu);
-        sleep(500);
-        Turn(0.5f, 90, Direction.CLOCKWISE, imu);
-        sleep(500);
-        Turn(0.5f, 135, Direction.COUNTERCLOCKWISE, imu);
+        Strafe(0.8f, 12, Direction.RIGHT);
     }
 }
