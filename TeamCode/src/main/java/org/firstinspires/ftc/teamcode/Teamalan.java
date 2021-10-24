@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import android.util.Log;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -9,8 +11,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.ImageNavigation;
 
-@Autonomous(name="Alan", group = "none")
+@Autonomous(name="Get Duckies", group = "none")
 
 public class Teamalan extends LinearOpMode {
 
@@ -25,6 +28,8 @@ public class Teamalan extends LinearOpMode {
 
     public MyIMU imu;
 
+    public ImageNavigation imageNavigation;
+
     public void initialize (){
         fl = hardwareMap.dcMotor.get("frontleft");
         fr = hardwareMap.dcMotor.get("frontright");
@@ -37,6 +42,9 @@ public class Teamalan extends LinearOpMode {
         imu = new MyIMU(hardwareMap);
         BNO055IMU.Parameters p = new BNO055IMU.Parameters();
         imu.initialize(p);
+
+        imageNavigation = new ImageNavigation(hardwareMap, this);
+        imageNavigation.init();
     }
 
     public void StopAll() {
@@ -149,14 +157,18 @@ public class Teamalan extends LinearOpMode {
         StopAll();
     }
 
-    public void Duckies () {
-
-    }
-
     @Override
     public void runOpMode() throws InterruptedException {
         initialize();
         waitForStart();
-        Strafe(0.8f, 12, Direction.RIGHT);
+        while (opModeIsActive()) {
+            if(imageNavigation != null){
+//                int duckPos = imageNavigation.getDuckies();
+//                telemetry.addData("ducky: %d", duckPos);
+//                telemetry.update();
+//                sleep(500);
+                imageNavigation.getPosition();
+            }
+        }
     }
 }
