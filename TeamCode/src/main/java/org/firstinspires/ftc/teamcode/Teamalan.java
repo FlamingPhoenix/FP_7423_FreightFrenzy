@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.ImageNavigation;
 
-@Autonomous(name="Get Duckies", group = "none")
+@Autonomous(name="Kick Me", group = "none")
 
 public class Teamalan extends LinearOpMode {
 
@@ -157,18 +157,115 @@ public class Teamalan extends LinearOpMode {
         StopAll();
     }
 
+    public float Max(float f1, float f2, float f3, float f4) {
+        f1 = Math.abs(f1);
+        f2 = Math.abs(f2);
+        f3 = Math.abs(f3);
+        f4 = Math.abs(f4);
+
+
+        if(f1>=f2 && f1>=f3 && f1>=f4) return f1;
+        if(f2>=f1 && f2>=f3 && f2>=f4) return f2;
+        if(f3>=f1 && f1>=f2 && f1>=f4) return f3;
+        return f4;
+
+
+
+    }
+
+    public void driveHeading(float power, float distance, float heading){
+        float currentHeading = imu.getAdjustedAngle();
+
+        float x = (PPR * distance)/(diameter * (float)Math.PI);
+
+        int targetEncoderValue = Math.round(x);
+
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        int currentPosition = 0;
+
+        while (currentPosition < targetEncoderValue && opModeIsActive()) {
+            float adjustmentPower = 0;
+            currentHeading = imu.getAdjustedAngle();
+            if (currentHeading > 0 && heading > 0) {
+                if (currentHeading - heading > 1) {
+                    adjustmentPower = 0.5f;
+                } else if (currentHeading - heading < -1) {
+                    adjustmentPower = -0.5f;
+                }
+            } else if (currentHeading < 0 && heading < 0) {
+                if (currentHeading - heading > 1) {
+                    adjustmentPower = 0.5f;
+                } else if (currentHeading - heading < -1) {
+                    adjustmentPower = -0.5f;
+                }
+            } else if (currentHeading < 0 && heading > 0) {
+                if (currentHeading - heading > 1) {
+                    adjustmentPower = 0.5f;
+                } else if (currentHeading - heading < -1) {
+                    adjustmentPower = -0.5f;
+                }
+            } else {
+                if (currentHeading - heading > 1) {
+                    adjustmentPower = 0.5f;
+                } else if (currentHeading - heading < -1) {
+                    adjustmentPower = -0.5f;
+                }
+            }
+
+            currentPosition = Math.abs(bl.getCurrentPosition());
+
+            float frontRight;
+            float frontLeft;
+            float backRight;
+            float backLeft;
+
+            if (adjustmentPower > 0) {
+                frontLeft = (power + adjustmentPower);
+                backLeft = (power + adjustmentPower);
+            } else {
+                frontLeft = (power);
+                backLeft = (power);
+            }
+
+            if (adjustmentPower < 0) {
+                frontRight = (power + adjustmentPower);
+                backRight = (power + adjustmentPower);
+
+            } else{
+                frontRight = (power);
+                backRight = (power);
+            }
+            float theMax = Max(frontLeft, frontRight, backLeft, backRight);
+
+            frontLeft = frontLeft/theMax;
+            frontRight = frontRight/theMax;
+            backLeft = backLeft/theMax;
+            backRight = backRight/theMax;
+
+            fr.setPower(frontRight);
+            fl.setPower(frontLeft);
+            bl.setPower(backLeft);
+            br.setPower(backRight);
+        }
+
+        StopAll();
+
+    }
     @Override
     public void runOpMode() throws InterruptedException {
         initialize();
         waitForStart();
         while (opModeIsActive()) {
-            if(imageNavigation != null){
+            Drive(0.5f, 10);
+            Turn(0.5f, 45, Direction.COUNTERCLOCKWISE, imu);
+            driveHeading(0.5f, 30, 30);
+//            if(imageNavigation != null){
 //                int duckPos = imageNavigation.getDuckies();
 //                telemetry.addData("ducky: %d", duckPos);
 //                telemetry.update();
 //                sleep(500);
-                imageNavigation.getPosition();
-            }
+//                imageNavigation.getPosition();
         }
     }
 }
