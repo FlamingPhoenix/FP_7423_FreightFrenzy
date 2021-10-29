@@ -256,16 +256,15 @@ public class Teamalan extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         initialize();
         waitForStart();
-        while (opModeIsActive()) {
-            Drive(0.5f, 10);
-            Turn(0.5f, 45, Direction.COUNTERCLOCKWISE, imu);
-            driveHeading(0.5f, 30, 30);
+
+        Drive(0.5f, 10);
+        Turn(0.5f, 45, Direction.COUNTERCLOCKWISE, imu);
+        driveHeading(0.5f, 30, 30);
 //            if(imageNavigation != null){
 //                int duckPos = imageNavigation.getDuckies();
 //                telemetry.addData("ducky: %d", duckPos);
 //                telemetry.update();
 //                sleep(500);
-//                imageNavigation.getPosition();
-        }
+//                imageNavigation.getPosition()
     }
 }
