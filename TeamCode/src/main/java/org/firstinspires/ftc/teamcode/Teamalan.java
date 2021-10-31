@@ -21,6 +21,7 @@ public class Teamalan extends LinearOpMode {
     public DcMotor fr;
     public DcMotor bl;
     public DcMotor br;
+    DcMotor carousel;
 
     public float PPR = 1120;
 
@@ -35,6 +36,8 @@ public class Teamalan extends LinearOpMode {
         fr = hardwareMap.dcMotor.get("frontright");
         bl = hardwareMap.dcMotor.get("backleft");
         br = hardwareMap.dcMotor.get("backright");
+        carousel = hardwareMap.dcMotor.get("carousel");
+
 
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -54,7 +57,7 @@ public class Teamalan extends LinearOpMode {
         br.setPower(0);
     }
 
-    public void Drive (float power, float distance) {
+    public void Drive (float power, float distance, Direction d) {
         float x = (PPR * distance)/(diameter * (float)Math.PI);
 
         int targetEncoderValue = Math.round(x);
@@ -65,10 +68,18 @@ public class Teamalan extends LinearOpMode {
 
         while (currentPosition < targetEncoderValue && opModeIsActive()) {
             currentPosition = Math.abs(bl.getCurrentPosition());
-            fl.setPower(power);
-            fr.setPower(power);
-            bl.setPower(power);
-            br.setPower(power);
+            if (d == Direction.FORWARD) {
+                fl.setPower(power);
+                fr.setPower(power);
+                bl.setPower(power);
+                br.setPower(power);
+            }
+            if (d == Direction.BACKWARD) {
+                fl.setPower(-power);
+                fr.setPower(-power);
+                bl.setPower(-power);
+                br.setPower(-power);
+            }
         }
 
         StopAll();
@@ -99,6 +110,7 @@ public class Teamalan extends LinearOpMode {
                 bl.setPower(-power);
                 fr.setPower(power);
                 br.setPower(power);
+
             }
         }
 
@@ -173,20 +185,30 @@ public class Teamalan extends LinearOpMode {
 
     }
 
-    public void driveHeading(float power, float distance, float heading){
-        float currentHeading = imu.getAdjustedAngle();
+    public void driveHeading(float power, float distance, float heading, Direction turnDirection){
+
+        power = Math.abs(power);
+
+        imu.reset(Direction.CLOCKWISE);
+
+        float currentHeading = imu.getAngularOrientation().firstAngle;
 
         float x = (PPR * distance)/(diameter * (float)Math.PI);
 
         int targetEncoderValue = Math.round(x);
+
+        Log.i("[phoenix:startValues]", String.format("Heading: %f; Target Encoder: %d", heading, targetEncoderValue));
+
 
         bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int currentPosition = 0;
 
         while (currentPosition < targetEncoderValue && opModeIsActive()) {
+            Log.i("[phoenix:currentHeading]", String.format("Current Heading: %f", currentHeading));
             float adjustmentPower = 0;
-            currentHeading = imu.getAdjustedAngle();
+            currentHeading = imu.getAngularOrientation().firstAngle;
+
             if (currentHeading > 0 && heading > 0) {
                 if (currentHeading - heading > 1) {
                     adjustmentPower = 0.5f;
@@ -200,9 +222,7 @@ public class Teamalan extends LinearOpMode {
                     adjustmentPower = -0.5f;
                 }
             } else if (currentHeading < 0 && heading > 0) {
-                if (currentHeading - heading > 1) {
-                    adjustmentPower = 0.5f;
-                } else if (currentHeading - heading < -1) {
+                if (currentHeading - heading < -1) {
                     adjustmentPower = -0.5f;
                 }
             } else {
@@ -215,33 +235,36 @@ public class Teamalan extends LinearOpMode {
 
             currentPosition = Math.abs(bl.getCurrentPosition());
 
-            float frontRight;
-            float frontLeft;
-            float backRight;
-            float backLeft;
+            float frontRight = power;
+            float frontLeft = power;
+            float backRight = power;
+            float backLeft = power;
 
             if (adjustmentPower > 0) {
                 frontLeft = (power + adjustmentPower);
                 backLeft = (power + adjustmentPower);
-            } else {
-                frontLeft = (power);
-                backLeft = (power);
+            }
+            else if (adjustmentPower < 0) {
+                frontRight = (power - adjustmentPower);
+                backRight = (power - adjustmentPower);
             }
 
-            if (adjustmentPower < 0) {
-                frontRight = (power + adjustmentPower);
-                backRight = (power + adjustmentPower);
-
-            } else{
-                frontRight = (power);
-                backRight = (power);
-            }
             float theMax = Max(frontLeft, frontRight, backLeft, backRight);
 
-            frontLeft = frontLeft/theMax;
-            frontRight = frontRight/theMax;
-            backLeft = backLeft/theMax;
-            backRight = backRight/theMax;
+            if (turnDirection == Direction.FORWARD) {
+                frontLeft = frontLeft/theMax;
+                frontRight = frontRight/theMax;
+                backLeft = backLeft/theMax;
+                backRight = backRight/theMax;
+            } else if (turnDirection == Direction.BACKWARD) {
+                frontLeft = -frontLeft/theMax;
+                frontRight = -frontRight/theMax;
+                backLeft = -backLeft/theMax;
+                backRight = -backRight/theMax;
+            }
+
+
+            Log.i("[phoenix:wheelPowers]", String.format("frontLeft: %f; frontRight: %f; backLeft: %f; backRight: %f", frontLeft, frontRight, backLeft, backRight));
 
             fr.setPower(frontRight);
             fl.setPower(frontLeft);
@@ -252,19 +275,41 @@ public class Teamalan extends LinearOpMode {
         StopAll();
 
     }
+    public void Carousel(float power){
+        float x = (280 * 50)/(diameter * (float)Math.PI);
+
+        int targetEncoderValue = Math.round(x);
+
+        carousel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        carousel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        int currentPosition = 0;
+
+        while (currentPosition < targetEncoderValue && opModeIsActive()) {
+            currentPosition = Math.abs(carousel.getCurrentPosition());
+
+            carousel.setPower(0.5);
+        }
+        carousel.setPower(0);
+    }
     @Override
     public void runOpMode() throws InterruptedException {
         initialize();
         waitForStart();
+//        Drive(0.5f, 12);
+//        Strafe(0.5f, 12, Direction.LEFT);
 
-        Drive(0.5f, 10);
-        Turn(0.5f, 45, Direction.COUNTERCLOCKWISE, imu);
-        driveHeading(0.5f, 30, 30);
+//        Turn(0.5f, 45, Direction.COUNTERCLOCKWISE, imu);
+//        driveHeading(0.5f, 50, 30);
 //            if(imageNavigation != null){
 //                int duckPos = imageNavigation.getDuckies();
 //                telemetry.addData("ducky: %d", duckPos);
 //                telemetry.update();
 //                sleep(500);
-//                imageNavigation.getPosition()
+//                imageNavigation.getPosition();
+        Drive(0.5f, 12, Direction.FORWARD);
+        sleep(500);
+        Turn(0.5f, 90, Direction.CLOCKWISE, imu);
+        sleep(500);
+        driveHeading(0.5f, 50, -100, Direction.BACKWARD);
     }
 }

@@ -5,4 +5,6 @@ public enum Direction {
     CLOCKWISE,
     RIGHT,
     LEFT,
+    FORWARD,
+    BACKWARD,
 }
