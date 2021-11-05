@@ -233,6 +233,9 @@ public class Teamalan extends LinearOpMode {
                 }
             }
 
+            if (turnDirection == Direction.BACKWARD)
+                adjustmentPower = adjustmentPower * -1;
+
             currentPosition = Math.abs(bl.getCurrentPosition());
 
             float frontRight = power;
@@ -240,7 +243,7 @@ public class Teamalan extends LinearOpMode {
             float backRight = power;
             float backLeft = power;
 
-            if (adjustmentPower > 0) {
+            if (adjustmentPower > 0) {  //positive means give more power to the left
                 frontLeft = (power + adjustmentPower);
                 backLeft = (power + adjustmentPower);
             }
@@ -276,21 +279,25 @@ public class Teamalan extends LinearOpMode {
 
     }
     public void Carousel(float power){
-        float x = (280 * 50)/(diameter * (float)Math.PI);
+        // technically 910 but adding more to get the ducky off the carousel
+        float x = (PPR * 3.25f)/(diameter * (float)Math.PI);
 
         int targetEncoderValue = Math.round(x);
+        int targetTime = 3000;
 
         carousel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         carousel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int currentPosition = 0;
+        int currentTime = 0;
 
-        while (currentPosition < targetEncoderValue && opModeIsActive()) {
-            currentPosition = Math.abs(carousel.getCurrentPosition());
-
-            carousel.setPower(0.5);
-        }
+        carousel.setPower(-power);
+        sleep(targetTime);
+//        while (currentPosition < targetEncoderValue && opModeIsActive()) {
+//            currentPosition = Math.abs(carousel.getCurrentPosition());
+//        }
         carousel.setPower(0);
     }
+
     @Override
     public void runOpMode() throws InterruptedException {
         initialize();
@@ -310,6 +317,7 @@ public class Teamalan extends LinearOpMode {
         sleep(500);
         Turn(0.5f, 90, Direction.CLOCKWISE, imu);
         sleep(500);
-        driveHeading(0.5f, 50, -100, Direction.BACKWARD);
+        driveHeading(0.5f, 45, -55, Direction.BACKWARD);
+        Carousel(0.7f);
     }
 }
