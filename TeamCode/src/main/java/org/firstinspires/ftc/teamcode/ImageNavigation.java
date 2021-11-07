@@ -6,9 +6,12 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XZY;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.robot.Robot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +56,7 @@ public class ImageNavigation {
     // Class Members
     private OpenGLMatrix lastLocation   = null;
     private VuforiaTrackables targets   = null ;
-    List<VuforiaTrackable> allTrackables;
+    private List<VuforiaTrackable> allTrackables;
     private boolean targetVisible       = false;
 
     public ImageNavigation(HardwareMap h, LinearOpMode op) {
@@ -74,7 +77,7 @@ public class ImageNavigation {
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-        parameters.useExtendedTracking = false;
+        parameters.useExtendedTracking = true;
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -100,6 +103,7 @@ public class ImageNavigation {
         for (VuforiaTrackable trackable : allTrackables) {
             ((VuforiaTrackableDefaultListener) trackable.getListener()).setCameraLocationOnRobot(parameters.cameraName, cameraLocationOnRobot);
         }
+        targets.activate();
     }
 
     private void initTfod() {
@@ -158,22 +162,30 @@ public class ImageNavigation {
         return 2;
     }
 
-    public void getPosition() {
-        targets.activate();
+    public RobotPosition getRobotPosition() {
+
         while (!opMode.isStopRequested()) {
 
             // check all the trackable targets to see which one (if any) is visible.
             targetVisible = false;
             for (VuforiaTrackable trackable : allTrackables) {
                 if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
-                    opMode.telemetry.addData("Visible Target", trackable.getName());
+
+                    Log.i("[Phoenix] trackableName: %s", trackable.getName());
+
+                    //opMode.telemetry.addData("Visible Target", trackable.getName());
                     targetVisible = true;
 
                     // getUpdatedRobotLocation() will return null if no new information is available since
                     // the last time that call was made, or if the trackable is not currently visible.
-                    OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
+                    OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getRobotLocation();
                     if (robotLocationTransform != null) {
                         lastLocation = robotLocationTransform;
+                        Log.i("[Phoenix:lastLocation]", String.format("isNull: %b",  lastLocation == null));
+
+                    } else {
+                        Log.i("[Phoenix:listener]", "null");
+                        return null;
                     }
                     break;
                 }
@@ -181,14 +193,28 @@ public class ImageNavigation {
 
             // Provide feedback as to where the robot is located (if we know).
             if (targetVisible) {
+
+                Log.i("[Phoenix] Visible: %s", "yes");
+
                 // express position (translation) of robot in inches.
                 VectorF translation = lastLocation.getTranslation();
                 opMode.telemetry.addData("Pos (inches)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                         translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
 
+                RobotPosition robotPosition = new RobotPosition();
+
+                robotPosition.x = translation.get(0)/mmPerInch;
+                robotPosition.y = translation.get(1)/mmPerInch;
+
+
                 // express the rotation of the robot in degrees.
                 Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+                robotPosition.heading = rotation.thirdAngle;
                 opMode.telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+
+                Log.i("[Phoenix:robotPosition]", String.format("x=%f, y=%f, heading=%f", robotPosition.x, robotPosition.y,robotPosition.heading));
+                return robotPosition;
+
             }
             else {
                 opMode.telemetry.addData("Visible Target", "none");
@@ -197,7 +223,9 @@ public class ImageNavigation {
         }
 
         // Disable Tracking when we are done;
-        targets.deactivate();
+
+
+        return null;
     }
 
 }

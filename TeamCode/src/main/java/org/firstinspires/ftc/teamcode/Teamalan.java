@@ -252,32 +252,30 @@ public class Teamalan extends LinearOpMode {
                 backRight = (power - adjustmentPower);
             }
 
-            float theMax = Max(frontLeft, frontRight, backLeft, backRight);
-
             if (turnDirection == Direction.FORWARD) {
-                frontLeft = frontLeft/theMax;
-                frontRight = frontRight/theMax;
-                backLeft = backLeft/theMax;
-                backRight = backRight/theMax;
+                setMaxPower(frontLeft, frontRight, backLeft, backRight);
             } else if (turnDirection == Direction.BACKWARD) {
-                frontLeft = -frontLeft/theMax;
-                frontRight = -frontRight/theMax;
-                backLeft = -backLeft/theMax;
-                backRight = -backRight/theMax;
+                setMaxPower(-frontLeft, -frontRight, -backLeft, -backRight);
             }
 
 
             Log.i("[phoenix:wheelPowers]", String.format("frontLeft: %f; frontRight: %f; backLeft: %f; backRight: %f", frontLeft, frontRight, backLeft, backRight));
-
-            fr.setPower(frontRight);
-            fl.setPower(frontLeft);
-            bl.setPower(backLeft);
-            br.setPower(backRight);
         }
 
         StopAll();
 
     }
+
+    public void setMaxPower(float flp, float frp, float blp, float brp) {
+        float max = Max(Math.abs(flp), Math.abs(frp), Math.abs(blp), Math.abs(brp));
+
+        fl.setPower(flp/max);
+        fr.setPower(frp/max);
+        bl.setPower(blp/max);
+        br.setPower(brp/max);
+    }
+
+
     public void Carousel(float power){
         // technically 910 but adding more to get the ducky off the carousel
         float x = (PPR * 3.25f)/(diameter * (float)Math.PI);
@@ -298,6 +296,61 @@ public class Teamalan extends LinearOpMode {
         carousel.setPower(0);
     }
 
+    public void DriveToPoint (int endX, int endY) {
+
+        RobotPosition startPosition = imageNavigation.getRobotPosition();
+        Log.i("[Phoenix:startPosition]", "got position");
+
+        if (startPosition == null)  {
+            return;
+        }
+
+        float startX = startPosition.x;
+        float startY = startPosition.y;
+        float startHeading = startPosition.heading;
+
+        float x = endX - startX;
+        float y = endY - startY;
+        float epsilon = 0.1f;
+
+        Log.i("[Phoenix:DriveToPoint]", String.format("x: %f, y: %f", x, y));
+
+        while (x >= 0 || y >= 0 && opModeIsActive()) {
+
+            RobotPosition currentPosition = imageNavigation.getRobotPosition();
+
+            float currentX = currentPosition.x;
+            float currentY = currentPosition.y;
+            float currentHeading = currentPosition.heading;
+
+            x = endX - currentX;
+            y = endY - currentY;
+
+            float p = x;
+            float q = y;
+
+//            if (x > 0)
+//                p = 0.5f;
+//            else if (x < 0)
+//                p = -0.5f;
+//
+//            if (y > 0) {
+//                q = 0.25f;
+//            } else if (y < 0) {
+//                q = -0.25f;
+//            }
+
+            p *= -1;
+            q *= -1;
+
+            setMaxPower(-p+q, p+q, p+q, -p+q);
+
+            Log.i("[phoenix:wheelPowers]", String.format("currentX: %f; currentY: %f; startX: %f; startY: %f; p: %f; q: %f", currentX, currentY, startX, startY, p, q));
+
+        }
+
+    }
+
     @Override
     public void runOpMode() throws InterruptedException {
         initialize();
@@ -313,11 +366,13 @@ public class Teamalan extends LinearOpMode {
 //                telemetry.update();
 //                sleep(500);
 //                imageNavigation.getPosition();
-        Drive(0.5f, 12, Direction.FORWARD);
-        sleep(500);
-        Turn(0.5f, 90, Direction.CLOCKWISE, imu);
-        sleep(500);
-        driveHeading(0.5f, 45, -55, Direction.BACKWARD);
-        Carousel(0.7f);
+//        Drive(0.5f, 12, Direction.FORWARD);
+//        sleep(500);
+//        Turn(0.5f, 90, Direction.CLOCKWISE, imu);
+//        sleep(500);
+//        driveHeading(0.5f, 45, -55, Direction.BACKWARD);
+//        Carousel(0.7f);
+
+        DriveToPoint(12,48);
     }
 }
