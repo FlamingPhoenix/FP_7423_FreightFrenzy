@@ -269,10 +269,17 @@ public class Teamalan extends LinearOpMode {
     public void setMaxPower(float flp, float frp, float blp, float brp) {
         float max = Max(Math.abs(flp), Math.abs(frp), Math.abs(blp), Math.abs(brp));
 
-        fl.setPower(flp/max);
-        fr.setPower(frp/max);
-        bl.setPower(blp/max);
-        br.setPower(brp/max);
+        if (max > 1) {
+            fl.setPower(flp/max);
+            fr.setPower(frp/max);
+            bl.setPower(blp/max);
+            br.setPower(brp/max);
+        } else {
+            fl.setPower(flp);
+            fr.setPower(frp);
+            bl.setPower(blp);
+            br.setPower(brp);
+        }
     }
 
 
@@ -328,17 +335,6 @@ public class Teamalan extends LinearOpMode {
 
             float p = x;
             float q = y;
-
-//            if (x > 0)
-//                p = 0.5f;
-//            else if (x < 0)
-//                p = -0.5f;
-//
-//            if (y > 0) {
-//                q = 0.25f;
-//            } else if (y < 0) {
-//                q = -0.25f;
-//            }
 
             p *= -1;
             q *= -1;
