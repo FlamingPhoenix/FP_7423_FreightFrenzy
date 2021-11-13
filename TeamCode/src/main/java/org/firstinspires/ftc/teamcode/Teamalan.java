@@ -316,13 +316,16 @@ public class Teamalan extends LinearOpMode {
         float startY = startPosition.y;
         float startHeading = startPosition.heading;
 
+        boolean movingX;
+        boolean movingY;
+
         float x = endX - startX;
         float y = endY - startY;
         float epsilon = 0.1f;
 
         Log.i("[Phoenix:DriveToPoint]", String.format("x: %f, y: %f", x, y));
 
-        while (x >= 0 || y >= 0 && opModeIsActive()) {
+        while (x > 0 || y > 0 && opModeIsActive()) {
 
             RobotPosition currentPosition = imageNavigation.getRobotPosition();
 
@@ -333,7 +336,14 @@ public class Teamalan extends LinearOpMode {
             x = endX - currentX;
             y = endY - currentY;
 
-            float p = x;
+            if (x <= 0) {
+                x = 0;
+            }
+            if (y <= 0) {
+                y = 0;
+            }
+
+            float p = 2*x;
             float q = y;
 
             p *= -1;
@@ -344,6 +354,7 @@ public class Teamalan extends LinearOpMode {
             Log.i("[phoenix:wheelPowers]", String.format("currentX: %f; currentY: %f; startX: %f; startY: %f; p: %f; q: %f", currentX, currentY, startX, startY, p, q));
 
         }
+        StopAll();
 
     }
 
