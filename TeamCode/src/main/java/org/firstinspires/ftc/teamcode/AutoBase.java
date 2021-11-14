@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.opMode;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import android.util.Log;
@@ -10,12 +11,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.teamcode.ImageNavigation;
 
-@Autonomous(name="Kick Me", group = "none")
-
-public class Teamalan extends LinearOpMode {
+public class AutoBase extends LinearOpMode {
 
     public DcMotor fl;
     public DcMotor fr;
@@ -303,8 +304,8 @@ public class Teamalan extends LinearOpMode {
         carousel.setPower(0);
     }
 
-    public void DriveToPoint (int endX, int endY) {
-
+    public void DriveToPoint (float power, int endX, int endY) {
+        power = Math.abs(power);
         RobotPosition startPosition = imageNavigation.getRobotPosition();
         Log.i("[Phoenix:startPosition]", "got position");
 
@@ -314,7 +315,8 @@ public class Teamalan extends LinearOpMode {
 
         float startX = startPosition.x;
         float startY = startPosition.y;
-        float startHeading = startPosition.heading;
+        imu.reset(Direction.NONE);
+        float startAngle = imu.getAdjustedAngle();
 
         boolean movingX;
         boolean movingY;
@@ -331,7 +333,7 @@ public class Teamalan extends LinearOpMode {
 
             float currentX = currentPosition.x;
             float currentY = currentPosition.y;
-            float currentHeading = currentPosition.heading;
+            float currentAngle = imu.getAdjustedAngle();
 
             x = endX - currentX;
             y = endY - currentY;
@@ -343,43 +345,55 @@ public class Teamalan extends LinearOpMode {
                 y = 0;
             }
 
-            float p = 2*x;
-            float q = y;
+            float p = 2 * Math.abs(x / (endX - startX)) * power;
+            float q = Math.abs(y / (endY - startY)) * power;
+
+            if (p > q)
+                p = q;
+
+            if (p < 0.2 && x > 0)
+                p = 0.2f;
+            if (q < 0.1 && y > 0)
+                q = 0.1f;
 
             p *= -1;
             q *= -1;
 
-            setMaxPower(-p+q, p+q, p+q, -p+q);
+            setMaxPower(-p+q, p+q, (p+q)/2, (-p+q)/2);
 
             Log.i("[phoenix:wheelPowers]", String.format("currentX: %f; currentY: %f; startX: %f; startY: %f; p: %f; q: %f", currentX, currentY, startX, startY, p, q));
-
+            this.sleep(2);
         }
+        StopAll();
+
+    }
+
+    public void TurnUntilImage(float power, Direction d, int angle) {
+
+        imu.reset(d);
+
+        if (d == Direction.COUNTERCLOCKWISE) {
+            while (!imageNavigation.seesImage() && opModeIsActive() && imu.getAdjustedAngle() < angle) {
+                fl.setPower(-power);
+                bl.setPower(-power);
+                fr.setPower(power);
+                br.setPower(power);
+            }
+        } else {
+            while (!imageNavigation.seesImage() && opModeIsActive() && imu.getAdjustedAngle() > angle) {
+                fl.setPower(power);
+                bl.setPower(power);
+                fr.setPower(-power);
+                br.setPower(-power);
+            }
+        }
+
         StopAll();
 
     }
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initialize();
-        waitForStart();
-//        Drive(0.5f, 12);
-//        Strafe(0.5f, 12, Direction.LEFT);
 
-//        Turn(0.5f, 45, Direction.COUNTERCLOCKWISE, imu);
-//        driveHeading(0.5f, 50, 30);
-//            if(imageNavigation != null){
-//                int duckPos = imageNavigation.getDuckies();
-//                telemetry.addData("ducky: %d", duckPos);
-//                telemetry.update();
-//                sleep(500);
-//                imageNavigation.getPosition();
-//        Drive(0.5f, 12, Direction.FORWARD);
-//        sleep(500);
-//        Turn(0.5f, 90, Direction.CLOCKWISE, imu);
-//        sleep(500);
-//        driveHeading(0.5f, 45, -55, Direction.BACKWARD);
-//        Carousel(0.7f);
-
-        DriveToPoint(12,48);
     }
 }

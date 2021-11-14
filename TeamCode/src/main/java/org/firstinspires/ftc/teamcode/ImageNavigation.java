@@ -162,6 +162,14 @@ public class ImageNavigation {
         return 2;
     }
 
+    public boolean seesImage() {
+        for (VuforiaTrackable trackable : allTrackables)
+            if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible())
+                return true;
+
+        return false;
+    }
+
     public RobotPosition getRobotPosition() {
 
         while (!opMode.isStopRequested()) {
