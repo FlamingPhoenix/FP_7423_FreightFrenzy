@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.robot.Robot;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,32 +132,31 @@ public class ImageNavigation {
         if (tfod != null) {
             // getUpdatedRecognitions() will return null if no new information is available since
             // the last time that call was made.
-            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-            if (updatedRecognitions != null) {
-                opMode.telemetry.addData("# Object Detected", updatedRecognitions.size());
-                // step through the list of recognitions and display boundary info.
-                int i = 0;
-                for (Recognition recognition : updatedRecognitions) {
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    opMode.telemetry.addData("# Object Detected", updatedRecognitions.size());
+                    // step through the list of recognitions and display boundary info.
+                    int i = 0;
+                    for (Recognition recognition : updatedRecognitions) {
 
-                    opMode.telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                    opMode.telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                            recognition.getLeft(), recognition.getTop());
-                    opMode.telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                            recognition.getRight(), recognition.getBottom());
+                        opMode.telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                        opMode.telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                recognition.getLeft(), recognition.getTop());
+                        opMode.telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                recognition.getRight(), recognition.getBottom());
 
-                    if (recognition.getLabel() == "Duck") {
-                        if (recognition.getLeft() < 325) {
-                            return 0;
-                        } else if (recognition.getLeft() > 325) {
-                            return 1;
+                        if (recognition.getLabel() == "Duck") {
+                            if (recognition.getLeft() < 325) {
+                                return 0;
+                            } else if (recognition.getLeft() > 325) {
+                                return 1;
+                            } else
+                                opMode.telemetry.addData("recoginition %s", "blank");
                         }
-                        else
-                            opMode.telemetry.addData("recoginition %s", "blank");
-                    }
 
-                    i++;
-                }
-                opMode.telemetry.update();
+                        i++;
+                    }
+                    opMode.telemetry.update();
             }
         }
         return 2;
