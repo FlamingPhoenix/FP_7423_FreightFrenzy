@@ -186,13 +186,13 @@ public class AutoBase extends LinearOpMode {
 
     }
 
-    public void driveHeading(float power, float distance, float heading, Direction turnDirection){
+    public void DriveHeading(float power, float distance, float heading, Direction turnDirection){
 
         power = Math.abs(power);
 
-        imu.reset(Direction.CLOCKWISE);
+        imu.reset(Direction.NONE);
 
-        float currentHeading = imu.getAngularOrientation().firstAngle;
+        float currentHeading = imu.getAdjustedAngle();
 
         float x = (PPR * distance)/(diameter * (float)Math.PI);
 
@@ -208,7 +208,7 @@ public class AutoBase extends LinearOpMode {
         while (currentPosition < targetEncoderValue && opModeIsActive()) {
             Log.i("[phoenix:currentHeading]", String.format("Current Heading: %f", currentHeading));
             float adjustmentPower = 0;
-            currentHeading = imu.getAngularOrientation().firstAngle;
+            currentHeading = imu.getAdjustedAngle();
 
             if (currentHeading > 0 && heading > 0) {
                 if (currentHeading - heading > 1) {
@@ -218,9 +218,9 @@ public class AutoBase extends LinearOpMode {
                 }
             } else if (currentHeading < 0 && heading < 0) {
                 if (currentHeading - heading > 1) {
-                    adjustmentPower = 0.5f;
-                } else if (currentHeading - heading < -1) {
                     adjustmentPower = -0.5f;
+                } else if (currentHeading - heading < -1) {
+                    adjustmentPower = 0.5f;
                 }
             } else if (currentHeading < 0 && heading > 0) {
                 if (currentHeading - heading < -1) {
@@ -366,6 +366,34 @@ public class AutoBase extends LinearOpMode {
         }
         StopAll();
 
+    }
+
+    public void DriveToPointHeading (float power, int endX, int endY) {
+
+        power = Math.abs(power);
+        RobotPosition startPosition = imageNavigation.getRobotPosition();
+        Log.i("[Phoenix:startPosition]", "got position");
+
+        if (startPosition == null)  {
+            return;
+        }
+
+        float startX = startPosition.x;
+        float startY = startPosition.y;
+        imu.reset(Direction.NONE);
+        float startAngle = imu.getAdjustedAngle();
+
+        float x = endX - startX;
+        float y = endY - startY;
+
+        float distance = (float) Math.sqrt(x*x + y*y);
+
+        float angle = (float) (180/Math.PI *  Math.atan(x/y));
+        float heading = angle + imu.getAdjustedAngle();
+
+        Log.i("[phoenix:DTPH]", String.format("x: %f; y: %f; distance: %f; angle: %f; heading: %f", x, y, distance, angle, heading));
+
+        DriveHeading(power, distance, heading, Direction.BACKWARD);
     }
 
     public void TurnUntilImage(float power, Direction d, int angle) {

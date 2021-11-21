@@ -27,13 +27,15 @@ public class RedWarehouse extends AutoBase {
         Drive(0.5f, 12, Direction.BACKWARD);
         TurnUntilImage(0.5f, Direction.CLOCKWISE, 135);
 
-        while(imageNavigation.getRobotPosition().y < -45){
-            fl.setPower(0.3);
-            fr.setPower(0.3);
-            bl.setPower(0.3);
-            br.setPower(0.3);
-            sleep(10);
-        }
+        DriveToPointHeading(0.5f, 12, -65);
+
+//        while(imageNavigation.getRobotPosition().y < -45){
+//            fl.setPower(0.3);
+//            fr.setPower(0.3);
+//            bl.setPower(0.3);
+//            br.setPower(0.3);
+//            sleep(10);
+//        }
         StopAll();
         //drop freight
 
