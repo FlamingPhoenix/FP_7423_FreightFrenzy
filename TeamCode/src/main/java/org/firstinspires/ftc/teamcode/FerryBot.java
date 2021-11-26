@@ -17,8 +17,8 @@ public class FerryBot extends OpMode{
     DcMotor bl;
     DcMotor carousel;
 
-    float x1, x2, y1, y2, tr;
-    boolean bpr;
+    float x1, x2, y1, y2/*, tr*/;
+//    boolean bpr;
 
     public void Drive(float x1, float y1, float x2) {
 
@@ -48,7 +48,7 @@ public class FerryBot extends OpMode{
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        carousel = hardwareMap.dcMotor.get("carousel");
+//        carousel = hardwareMap.dcMotor.get("carousel");
     }
 
     @Override
@@ -57,8 +57,8 @@ public class FerryBot extends OpMode{
         y1 = gamepad1.left_stick_y;
         x2 = gamepad1.right_stick_x;
         y2 = gamepad1.right_stick_y;
-        tr = gamepad1.right_trigger;
-        bpr = gamepad1.right_bumper;
+//        tr = gamepad1.right_trigger;
+//        bpr = gamepad1.right_bumper;
 
         double joystickLeftDistance = Math.pow(x1, 2) + Math.pow(y1, 2);
         if (joystickLeftDistance < 0.9) {
@@ -70,16 +70,16 @@ public class FerryBot extends OpMode{
             x2 = x2 / 2;
         }
 
-        if (tr > 0.1) {
-            carousel.setPower(-tr);
-            telemetry.addData("Carousel Power: %f", tr);
-            telemetry.update();
-        } else if (bpr) {
-            carousel.setPower(-0.5f);
-        } else {
-            carousel.setPower(0);
+//        if (tr > 0.1) {
+//            carousel.setPower(-tr);
+//            telemetry.addData("Carousel Power: %f", tr);
+//            telemetry.update();
+//        } else if (bpr) {
+//            carousel.setPower(-0.5f);
+//        } else {
+//            carousel.setPower(0);
 
-        }
+//        }
 
         Drive(x1, y1 * -1, x2);
 

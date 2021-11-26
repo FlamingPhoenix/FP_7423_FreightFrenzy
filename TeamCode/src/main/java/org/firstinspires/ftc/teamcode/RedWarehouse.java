@@ -25,9 +25,13 @@ public class RedWarehouse extends AutoBase {
         }
 
         Drive(0.5f, 12, Direction.BACKWARD);
-        TurnUntilImage(0.5f, Direction.CLOCKWISE, 135);
+        Strafe(0.8f, 6, Direction.RIGHT);
+//        TurnUntilImage(0.5f, Direction.CLOCKWISE, 135);
+        Turn(0.5f, 150, Direction.CLOCKWISE, imu);
+        sleep(200);
+        Turn(0.5f, 30, Direction.COUNTERCLOCKWISE, imu);
 
-        DriveToPointHeading(0.5f, 12, -65);
+        DriveToPointHeading(0.35f, 18, -60);
 
 //        while(imageNavigation.getRobotPosition().y < -45){
 //            fl.setPower(0.3);

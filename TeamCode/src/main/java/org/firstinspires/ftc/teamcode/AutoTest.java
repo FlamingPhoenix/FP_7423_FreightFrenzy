@@ -24,7 +24,7 @@ public class AutoTest extends AutoBase {
         waitForStart();
 
         //DriveHeading(0.5f, 24, -45, Direction.FORWARD);
-        DriveToPointHeading(0.5f, 12, 60);
+        DriveToPointHeading(0.5f, -12, -65);
 
     }
 

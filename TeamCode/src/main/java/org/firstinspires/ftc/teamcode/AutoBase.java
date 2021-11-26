@@ -389,7 +389,7 @@ public class AutoBase extends LinearOpMode {
         float distance = (float) Math.sqrt(x*x + y*y);
 
         float angle = (float) (180/Math.PI *  Math.atan(x/y));
-        float heading = angle + imu.getAdjustedAngle();
+        float heading = angle + 90;
 
         Log.i("[phoenix:DTPH]", String.format("x: %f; y: %f; distance: %f; angle: %f; heading: %f", x, y, distance, angle, heading));
 
