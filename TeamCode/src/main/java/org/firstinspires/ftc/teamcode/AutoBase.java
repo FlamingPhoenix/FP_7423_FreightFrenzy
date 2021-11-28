@@ -389,7 +389,7 @@ public class AutoBase extends LinearOpMode {
         float distance = (float) Math.sqrt(x*x + y*y);
 
         float angle = (float) (180/Math.PI *  Math.atan(x/y));
-        float heading = angle + 90;
+        float heading = -angle;
 
         Log.i("[phoenix:DTPH]", String.format("x: %f; y: %f; distance: %f; angle: %f; heading: %f", x, y, distance, angle, heading));
 
@@ -418,6 +418,67 @@ public class AutoBase extends LinearOpMode {
 
         StopAll();
 
+    }
+
+    public void StrafeUntilHeading(float power, float multiplier, float heading, float distance, Direction d) {
+        float x = (PPR * (2 * distance))/(diameter * (float)Math.PI);
+
+        int targetEncoderValue = Math.round(x);
+
+        float flp, frp, blp, brp;
+
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        int currentPosition = 0;
+
+        if (d == Direction.LEFT) {
+            while (currentPosition < targetEncoderValue && opModeIsActive()) {
+                currentPosition = Math.abs(bl.getCurrentPosition());
+                float currentHeading = imu.getAdjustedAngle();
+
+                flp = power;
+                frp = -power;
+                blp = -power;
+                brp = power;
+
+                if (currentHeading > heading) {
+                    flp *= multiplier;
+                    frp *= multiplier;
+                }
+                else if (currentHeading < heading) {
+                    blp *= multiplier;
+                    brp *= multiplier;
+                }
+
+                setMaxPower(flp, frp, blp, brp);
+                Log.i("[phoenix:strafeUntilHeading]", String.format("currentHeading: %f, heading: %f, flp: %f, frp: %f, blp: %f, brp: %f", currentHeading, heading, flp, frp, blp, brp));
+            }
+        } else {
+            while (currentPosition < targetEncoderValue && opModeIsActive()) {
+                currentPosition = Math.abs(bl.getCurrentPosition());
+                float currentHeading = imu.getAdjustedAngle();
+
+                flp = -power;
+                frp = power;
+                blp = power;
+                brp = -power;
+
+                if (currentHeading > heading) {
+                    flp *= multiplier;
+                    frp *= multiplier;
+                }
+                else if (currentHeading < heading) {
+                    blp *= multiplier;
+                    brp *= multiplier;
+                }
+                blp = power;
+
+                setMaxPower(flp, frp, blp, brp);
+                Log.i("[phoenix:strafeUntilHeading]", String.format("currentHeading: %f, heading: %f, flp: %f, frp: %f, blp: %f, brp: %f", currentHeading, heading, flp, frp, blp, brp));
+            }
+        }
+
+        StopAll();
     }
 
     @Override
