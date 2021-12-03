@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -9,8 +11,14 @@ public class RedWarehouse extends AutoBase {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        Log.i("[phoenix:InitgetAdjustedAngle]", "Initialize");
         initialize();
+        Log.i("[phoenix:InitgetAdjustedAngle]", "After Initialize");
         waitForStart();
+        Log.i("[phoenix:InitgetAdjustedAngle]", "Started");
+
+        Log.i("[phoenix:InitgetAdjustedAngle]", String.format("getAdjustedAngle: %f", imu.getAdjustedAngle()));
+
 
 //        int duckPos = 2;
 //
@@ -37,7 +45,8 @@ public class RedWarehouse extends AutoBase {
 
         Turn(0.5f, 135, Direction.COUNTERCLOCKWISE, imu);
         sleep(1000);
-        StrafeUntilHeading(0.5f, 1.5f, 90, 20, Direction.RIGHT);
+        Log.i("[phoenix:getAdjustedAngle]", String.format("getAdjustedAngle: %f", imu.getAdjustedAngle()));
+        StrafeUntilHeading(0.5f, 1.5f, startHeading + 90, 20, Direction.LEFT);
 
     }
 

@@ -32,6 +32,8 @@ public class AutoBase extends LinearOpMode {
 
     public ImageNavigation imageNavigation;
 
+    public float startHeading;
+
     public void initialize (){
         fl = hardwareMap.dcMotor.get("frontleft");
         fr = hardwareMap.dcMotor.get("frontright");
@@ -49,6 +51,8 @@ public class AutoBase extends LinearOpMode {
 
         imageNavigation = new ImageNavigation(hardwareMap, this);
         imageNavigation.init();
+
+        startHeading = imu.getAdjustedAngle();
     }
 
     public void StopAll() {
@@ -442,12 +446,12 @@ public class AutoBase extends LinearOpMode {
                 brp = power;
 
                 if (currentHeading > heading) {
-                    flp *= multiplier;
-                    frp *= multiplier;
-                }
-                else if (currentHeading < heading) {
                     blp *= multiplier;
                     brp *= multiplier;
+                }
+                else if (currentHeading < heading) {
+                    flp *= multiplier;
+                    frp *= multiplier;
                 }
 
                 setMaxPower(flp, frp, blp, brp);
@@ -471,7 +475,6 @@ public class AutoBase extends LinearOpMode {
                     blp *= multiplier;
                     brp *= multiplier;
                 }
-                blp = power;
 
                 setMaxPower(flp, frp, blp, brp);
                 Log.i("[phoenix:strafeUntilHeading]", String.format("currentHeading: %f, heading: %f, flp: %f, frp: %f, blp: %f, brp: %f", currentHeading, heading, flp, frp, blp, brp));

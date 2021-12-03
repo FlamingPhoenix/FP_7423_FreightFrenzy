@@ -31,7 +31,10 @@ public class MyIMU implements BNO055IMU {
     public boolean initialize(Parameters parameters) {
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
 
-        return myIMU.initialize((parameters));
+        boolean r = myIMU.initialize((parameters));
+        reset(Direction.NONE);
+
+        return r;
     }
 
     public void reset(Direction turnDirection) {
