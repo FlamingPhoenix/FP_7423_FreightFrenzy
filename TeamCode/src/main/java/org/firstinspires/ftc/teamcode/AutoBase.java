@@ -39,7 +39,7 @@ public class AutoBase extends LinearOpMode {
         fr = hardwareMap.dcMotor.get("frontright");
         bl = hardwareMap.dcMotor.get("backleft");
         br = hardwareMap.dcMotor.get("backright");
-        carousel = hardwareMap.dcMotor.get("carousel");
+        //carousel = hardwareMap.dcMotor.get("carousel");
 
 
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -190,7 +190,7 @@ public class AutoBase extends LinearOpMode {
 
     }
 
-    public void DriveHeading(float power, float distance, float heading, Direction turnDirection){
+    public void DriveHeading(float power, float distance, float heading, float adjust, Direction turnDirection){
 
         power = Math.abs(power);
 
@@ -210,31 +210,31 @@ public class AutoBase extends LinearOpMode {
         int currentPosition = 0;
 
         while (currentPosition < targetEncoderValue && opModeIsActive()) {
-            Log.i("[phoenix:currentHeading]", String.format("Current Heading: %f", currentHeading));
+            Log.i("[phoenix:currentHeading]", String.format("Current Heading: %f; heading: %f", currentHeading, heading));
             float adjustmentPower = 0;
             currentHeading = imu.getAdjustedAngle();
 
             if (currentHeading > 0 && heading > 0) {
                 if (currentHeading - heading > 1) {
-                    adjustmentPower = 0.5f;
+                    adjustmentPower = adjust;
                 } else if (currentHeading - heading < -1) {
-                    adjustmentPower = -0.5f;
+                    adjustmentPower = -adjust;
                 }
             } else if (currentHeading < 0 && heading < 0) {
                 if (currentHeading - heading > 1) {
-                    adjustmentPower = -0.5f;
+                    adjustmentPower = adjust;
                 } else if (currentHeading - heading < -1) {
-                    adjustmentPower = 0.5f;
+                    adjustmentPower = -adjust;
                 }
             } else if (currentHeading < 0 && heading > 0) {
                 if (currentHeading - heading < -1) {
-                    adjustmentPower = -0.5f;
+                    adjustmentPower = -adjust;
                 }
             } else {
                 if (currentHeading - heading > 1) {
-                    adjustmentPower = 0.5f;
+                    adjustmentPower = adjust;
                 } else if (currentHeading - heading < -1) {
-                    adjustmentPower = -0.5f;
+                    adjustmentPower = -adjust;
                 }
             }
 
@@ -397,7 +397,7 @@ public class AutoBase extends LinearOpMode {
 
         Log.i("[phoenix:DTPH]", String.format("x: %f; y: %f; distance: %f; angle: %f; heading: %f", x, y, distance, angle, heading));
 
-        DriveHeading(power, distance, heading, Direction.BACKWARD);
+        DriveHeading(power, distance, heading, 0.5f, Direction.BACKWARD);
     }
 
     public void TurnUntilImage(float power, Direction d, int angle) {
@@ -428,6 +428,7 @@ public class AutoBase extends LinearOpMode {
         float x = (PPR * (2 * distance))/(diameter * (float)Math.PI);
 
         int targetEncoderValue = Math.round(x);
+        float powerAdjustRatio = 1 + Math.abs(multiplier);
 
         float flp, frp, blp, brp;
 
@@ -439,6 +440,14 @@ public class AutoBase extends LinearOpMode {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
                 currentPosition = Math.abs(bl.getCurrentPosition());
                 float currentHeading = imu.getAdjustedAngle();
+                float angleDiff = Math.abs(currentPosition-heading);
+                if (angleDiff > 20) {
+                    powerAdjustRatio = 1+Math.abs(multiplier);
+                } else if (angleDiff > 5) {
+                    powerAdjustRatio = 1+Math.abs(multiplier*0.5f);
+                } else {
+                    powerAdjustRatio = 1+Math.abs(multiplier*0.1f);
+                }
 
                 flp = power;
                 frp = -power;
@@ -446,12 +455,12 @@ public class AutoBase extends LinearOpMode {
                 brp = power;
 
                 if (currentHeading > heading) {
-                    blp *= multiplier;
-                    brp *= multiplier;
+                    blp /= powerAdjustRatio;
+                    brp /= powerAdjustRatio;
                 }
                 else if (currentHeading < heading) {
-                    flp *= multiplier;
-                    frp *= multiplier;
+                    flp /= powerAdjustRatio;
+                    frp /= powerAdjustRatio;
                 }
 
                 setMaxPower(flp, frp, blp, brp);
@@ -468,12 +477,12 @@ public class AutoBase extends LinearOpMode {
                 brp = -power;
 
                 if (currentHeading > heading) {
-                    flp *= multiplier;
-                    frp *= multiplier;
+                    flp /= powerAdjustRatio;
+                    frp /= powerAdjustRatio;
                 }
                 else if (currentHeading < heading) {
-                    blp *= multiplier;
-                    brp *= multiplier;
+                    blp /= powerAdjustRatio;
+                    brp /= powerAdjustRatio;
                 }
 
                 setMaxPower(flp, frp, blp, brp);

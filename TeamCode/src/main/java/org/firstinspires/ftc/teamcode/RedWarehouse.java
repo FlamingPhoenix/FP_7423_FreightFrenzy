@@ -43,11 +43,11 @@ public class RedWarehouse extends AutoBase {
 //        StopAll();
         //drop freight
 
-        Turn(0.5f, 135, Direction.COUNTERCLOCKWISE, imu);
+        Turn(0.5f, 90, Direction.COUNTERCLOCKWISE, imu);
         sleep(1000);
         Log.i("[phoenix:getAdjustedAngle]", String.format("getAdjustedAngle: %f", imu.getAdjustedAngle()));
-        StrafeUntilHeading(0.5f, 1.5f, startHeading + 90, 20, Direction.LEFT);
-
+        //StrafeUntilHeading(0.6f, 0.5f, startHeading + 90, 20, Direction.RIGHT);
+        DriveHeading(0.5f, 40, startHeading + 90, 0.3f, Direction.BACKWARD);
     }
 
 
