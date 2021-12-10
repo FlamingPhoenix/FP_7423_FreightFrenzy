@@ -24,7 +24,7 @@ public class AutoBase extends LinearOpMode {
     public DcMotor br;
     DcMotor carousel;
 
-    public float PPR = 1120;
+    public float PPR = 1120; //537.7 for actual robot
 
     public float diameter = 4;
 
