@@ -23,8 +23,18 @@ public class AutoTest extends AutoBase {
         initialize();
         waitForStart();
 
+        Drive(0.5f, 20, Direction.FORWARD);
+        sleep(20000);
+        Drive(0.5f, 20, Direction.BACKWARD);
+
         //DriveHeading(0.5f, 24, -45, Direction.FORWARD);
-        DriveToPointHeading(0.5f, -12, -65);
+        //DriveToPointHeading(0.5f, -12, -65);
+
+//        Strafe(0.5f, 20, Direction.LEFT);
+//        sleep(20000);
+//        Strafe(0.5f, 20, Direction.RIGHT);
+
+
 
     }
 

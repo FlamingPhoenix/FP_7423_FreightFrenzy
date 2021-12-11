@@ -1,22 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.opMode;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 import android.util.Log;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.teamcode.ImageNavigation;
 
-public class AutoBase extends LinearOpMode {
+public class AutoBaseWheel extends LinearOpMode {
 
     public DcMotor fl;
     public DcMotor fr;
@@ -39,7 +32,7 @@ public class AutoBase extends LinearOpMode {
         fr = hardwareMap.dcMotor.get("frontright");
         bl = hardwareMap.dcMotor.get("backleft");
         br = hardwareMap.dcMotor.get("backright");
-        carousel = hardwareMap.dcMotor.get("carousel");
+        //carousel = hardwareMap.dcMotor.get("carousel");
 
 
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -158,18 +151,18 @@ public class AutoBase extends LinearOpMode {
         if (d == Direction.LEFT) {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
                 currentPosition = Math.abs(bl.getCurrentPosition());
-                fl.setPower(power);
-                fr.setPower(-power);
-                bl.setPower(-power);
-                br.setPower(power);
-            }
-        } else {
-            while (currentPosition < targetEncoderValue && opModeIsActive()) {
-                currentPosition = Math.abs(bl.getCurrentPosition());
                 fl.setPower(-power);
                 fr.setPower(power);
                 bl.setPower(power);
                 br.setPower(-power);
+            }
+        } else {
+            while (currentPosition < targetEncoderValue && opModeIsActive()) {
+                currentPosition = Math.abs(bl.getCurrentPosition());
+                fl.setPower(power);
+                fr.setPower(-power);
+                bl.setPower(-power);
+                br.setPower(power);
             }
         }
 
@@ -295,7 +288,7 @@ public class AutoBase extends LinearOpMode {
         float x = (PPR * 3.25f)/(diameter * (float)Math.PI);
 
         int targetEncoderValue = Math.round(x);
-        int targetTime = 6000;
+        int targetTime = 3000;
 
         carousel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         carousel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -303,19 +296,11 @@ public class AutoBase extends LinearOpMode {
         int currentTime = 0;
 
         carousel.setPower(-power);
-        fl.setPower(-0.1);
-        fr.setPower(-0.1);
-        bl.setPower(-0.1);
-        br.setPower(-0.1);
         sleep(targetTime);
 //        while (currentPosition < targetEncoderValue && opModeIsActive()) {
 //            currentPosition = Math.abs(carousel.getCurrentPosition());
 //        }
         carousel.setPower(0);
-        fl.setPower(0);
-        fr.setPower(0);
-        bl.setPower(0);
-        br.setPower(0);
     }
 
     public void DriveToPoint (float power, int endX, int endY) {
