@@ -27,6 +27,7 @@ public class RedDuck extends AutoBase {
         Carousel(0.4f);
         Turn(0.25f, 80, Direction.COUNTERCLOCKWISE, imu);
         DriveHeading(0.25f, 25, startHeading - 155, 0.3f, Direction.FORWARD);
+        Strafe(0.5f, 5, Direction.RIGHT);
     }
 
 }

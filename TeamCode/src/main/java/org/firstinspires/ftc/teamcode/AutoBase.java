@@ -302,7 +302,7 @@ public class AutoBase extends LinearOpMode {
         int currentPosition = 0;
         int currentTime = 0;
 
-        carousel.setPower(-power);
+        carousel.setPower(power);
         fl.setPower(-0.1);
         fr.setPower(-0.1);
         bl.setPower(-0.1);
