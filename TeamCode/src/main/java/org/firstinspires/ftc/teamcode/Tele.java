@@ -1,19 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.os.PowerManager;
-import android.os.WorkSource;
-
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
-import org.checkerframework.common.util.report.qual.ReportWrite;
-
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
-//@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOp", group="none")
+@TeleOp(name="TeleOp Scrimmage", group="none")
 public class Tele extends OpMode{
 
     DcMotor fr;
@@ -27,10 +20,10 @@ public class Tele extends OpMode{
 
     public void Drive(float x1, float y1, float x2) {
 
-        float frontLeft = y1 - x1 + x2; //previous wheel orientation
-        float frontRight = y1 + x1 - x2;
-        float backLeft = y1 + x1 + x2;
-        float backRight = y1 - x1 - x2;
+        float frontLeft = y1 + x1 + x2; //new wheel orientation
+        float frontRight = y1 - x1 - x2;
+        float backLeft = y1 - x1 + x2;
+        float backRight = y1 + x1 - x2;
 
         frontLeft = Range.clip(frontLeft, -1, 1);
         frontRight = Range.clip(frontRight, -1, 1);
@@ -53,7 +46,7 @@ public class Tele extends OpMode{
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        fr.setDirection(DcMotorSimple.Direction.REVERSE);
+//        fr.setDirection(DcMotorSimple.Direction.REVERSE); //uncomment for competition robot
 
         carousel = hardwareMap.dcMotor.get("carousel");
     }

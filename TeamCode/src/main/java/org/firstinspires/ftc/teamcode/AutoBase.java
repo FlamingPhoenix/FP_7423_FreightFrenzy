@@ -1,20 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.opMode;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 import android.util.Log;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.teamcode.ImageNavigation;
 
 public class AutoBase extends LinearOpMode {
 
@@ -39,13 +32,13 @@ public class AutoBase extends LinearOpMode {
         fr = hardwareMap.dcMotor.get("frontright");
         bl = hardwareMap.dcMotor.get("backleft");
         br = hardwareMap.dcMotor.get("backright");
-        carousel = hardwareMap.dcMotor.get("carousel");
+        //carousel = hardwareMap.dcMotor.get("carousel");
 
 
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        fr.setDirection(DcMotorSimple.Direction.REVERSE); //for the actual robot
+//        fr.setDirection(DcMotorSimple.Direction.REVERSE); //for the actual robot
 
         imu = new MyIMU(hardwareMap);
         BNO055IMU.Parameters p = new BNO055IMU.Parameters();
@@ -158,18 +151,18 @@ public class AutoBase extends LinearOpMode {
         if (d == Direction.LEFT) {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
                 currentPosition = Math.abs(bl.getCurrentPosition());
-                fl.setPower(power);
-                fr.setPower(-power);
-                bl.setPower(-power);
-                br.setPower(power);
-            }
-        } else {
-            while (currentPosition < targetEncoderValue && opModeIsActive()) {
-                currentPosition = Math.abs(bl.getCurrentPosition());
                 fl.setPower(-power);
                 fr.setPower(power);
                 bl.setPower(power);
                 br.setPower(-power);
+            }
+        } else {
+            while (currentPosition < targetEncoderValue && opModeIsActive()) {
+                currentPosition = Math.abs(bl.getCurrentPosition());
+                fl.setPower(power);
+                fr.setPower(-power);
+                bl.setPower(-power);
+                br.setPower(power);
             }
         }
 
@@ -295,27 +288,19 @@ public class AutoBase extends LinearOpMode {
         float x = (PPR * 3.25f)/(diameter * (float)Math.PI);
 
         int targetEncoderValue = Math.round(x);
-        int targetTime = 6000;
+        int targetTime = 3000;
 
         carousel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         carousel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int currentPosition = 0;
         int currentTime = 0;
 
-        carousel.setPower(power);
-        fl.setPower(-0.1);
-        fr.setPower(-0.1);
-        bl.setPower(-0.1);
-        br.setPower(-0.1);
+        carousel.setPower(-power);
         sleep(targetTime);
 //        while (currentPosition < targetEncoderValue && opModeIsActive()) {
 //            currentPosition = Math.abs(carousel.getCurrentPosition());
 //        }
         carousel.setPower(0);
-        fl.setPower(0);
-        fr.setPower(0);
-        bl.setPower(0);
-        br.setPower(0);
     }
 
     public void DriveToPoint (float power, int endX, int endY) {
@@ -459,16 +444,16 @@ public class AutoBase extends LinearOpMode {
                     powerAdjustRatio = 1+Math.abs(multiplier*0.1f);
                 }
 
-                flp = power;
-                frp = -power;
-                blp = -power;
-                brp = power;
+                flp = -power;
+                frp = power;
+                blp = power;
+                brp = -power;
 
-                if (currentHeading > heading) {
+                if (currentHeading < heading) {
                     blp /= powerAdjustRatio;
                     brp /= powerAdjustRatio;
                 }
-                else if (currentHeading < heading) {
+                else if (currentHeading > heading) {
                     flp /= powerAdjustRatio;
                     frp /= powerAdjustRatio;
                 }
@@ -481,16 +466,16 @@ public class AutoBase extends LinearOpMode {
                 currentPosition = Math.abs(bl.getCurrentPosition());
                 float currentHeading = imu.getAdjustedAngle();
 
-                flp = -power;
-                frp = power;
-                blp = power;
-                brp = -power;
+                flp = power;
+                frp = -power;
+                blp = -power;
+                brp = power;
 
-                if (currentHeading > heading) {
+                if (currentHeading < heading) {
                     flp /= powerAdjustRatio;
                     frp /= powerAdjustRatio;
                 }
-                else if (currentHeading < heading) {
+                else if (currentHeading > heading) {
                     blp /= powerAdjustRatio;
                     brp /= powerAdjustRatio;
                 }

@@ -3,11 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous(name="RedWarehouse", group = "none")
 
-public class RedWarehouse extends AutoBase {
+public class RedWarehouse extends AutoBaseOLD {
 
     @Override
     public void runOpMode() throws InterruptedException {
