@@ -420,6 +420,7 @@ public class AutoBase extends LinearOpMode {
     }
 
     public void StrafeUntilHeading(float power, float multiplier, float heading, float distance, Direction d) {
+
         float x = (PPR * (2 * distance))/(diameter * (float)Math.PI);
 
         int targetEncoderValue = Math.round(x);
@@ -449,6 +450,12 @@ public class AutoBase extends LinearOpMode {
                 blp = power;
                 brp = -power;
 
+                if (currentHeading * heading < 0 && currentHeading > 0) {
+                    heading += 360;
+                } if (currentHeading * heading < 0  && currentHeading < 0) {
+                    heading -= 360;
+                }
+
                 if (currentHeading < heading) {
                     blp /= powerAdjustRatio;
                     brp /= powerAdjustRatio;
@@ -456,6 +463,7 @@ public class AutoBase extends LinearOpMode {
                 else if (currentHeading > heading) {
                     flp /= powerAdjustRatio;
                     frp /= powerAdjustRatio;
+
                 }
 
                 setMaxPower(flp, frp, blp, brp);
@@ -470,6 +478,12 @@ public class AutoBase extends LinearOpMode {
                 frp = -power;
                 blp = -power;
                 brp = power;
+
+                if (currentHeading * heading < 0 && currentHeading > 0) {
+                    heading += 360;
+                } if (currentHeading * heading < 0  && currentHeading < 0) {
+                    heading -= 360;
+                }
 
                 if (currentHeading < heading) {
                     flp /= powerAdjustRatio;
