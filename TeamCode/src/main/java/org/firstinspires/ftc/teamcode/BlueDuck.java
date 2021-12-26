@@ -22,12 +22,12 @@ public class BlueDuck extends AutoBase {
         sleep(100);
         //place freight
         Turn(0.25f, 90, Direction.CLOCKWISE, imu);
-        DriveHeading(0.25f, 21, startHeading - 135, 0.3f, Direction.BACKWARD);
+        DriveHeading(0.25f, 21, startHeading + 135, 0.3f, Direction.BACKWARD);
         //spin ducky amd score
-        Carousel(-0.5f);
-        Turn(0.25f, 80, Direction.CLOCKWISE, imu);
-        DriveHeading(0.25f, 20, startHeading + 155, 0.3f, Direction.FORWARD);
-        Strafe(0.5f,5, Direction.LEFT);
+        //Carousel(0.4f);
+        Turn(0.25f, 50, Direction.CLOCKWISE, imu);
+        DriveHeading(0.5f, 60,  startHeading + 120, 0.3f, Direction.FORWARD);
+        StrafeUntilHeading(0.5f, 2, startHeading + 180, 8, Direction.RIGHT);
     }
 
 }

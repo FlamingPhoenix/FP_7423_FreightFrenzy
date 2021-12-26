@@ -17,7 +17,7 @@ public class AutoTest extends AutoBase {
 
         sleep(100);
 
-        StrafeUntilHeading(0.6f, 2, startHeading + 180, 24, Direction.LEFT);
+        StrafeUntilHeading(0.6f, 2, startHeading + 180, 24, Direction.RIGHT);
 
 
         //DriveHeading(0.5f, 24, -45, Direction.FORWARD);

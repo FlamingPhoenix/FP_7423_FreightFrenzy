@@ -1,4 +1,6 @@
 package org.firstinspires.ftc.teamcode;
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name="RedDuck", group = "none")
@@ -22,12 +24,12 @@ public class RedDuck extends AutoBase {
         sleep(100);
         //place freight
         Turn(0.25f, 90, Direction.COUNTERCLOCKWISE, imu);
-        DriveHeading(0.25f, 30, startHeading + 135, 0.3f, Direction.BACKWARD);
+        DriveHeading(0.25f, 35, startHeading + 135, 0.3f, Direction.BACKWARD);
         //spin ducky amd score
-        Carousel(0.4f);
+        //Carousel(0.4f);
         Turn(0.25f, 80, Direction.COUNTERCLOCKWISE, imu);
-        DriveHeading(0.25f, 25, startHeading - 155, 0.3f, Direction.FORWARD);
-        Strafe(0.5f, 5, Direction.RIGHT);
+        DriveHeading(0.25f, 54,  startHeading + 155, 0.3f, Direction.FORWARD);
+        StrafeUntilHeading(0.5f, 2, startHeading + 180, 10, Direction.LEFT);
     }
 
 }
