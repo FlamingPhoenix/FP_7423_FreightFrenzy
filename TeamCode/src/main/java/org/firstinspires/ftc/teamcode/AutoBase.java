@@ -6,6 +6,9 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PwmControl;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoControllerEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
@@ -16,6 +19,9 @@ public class AutoBase extends LinearOpMode {
     public DcMotor bl;
     public DcMotor br;
     DcMotor carousel;
+
+    public Servo pivotLeft;
+    public Servo pivotRight;
 
     public float PPR = 537.7f; //537.7 for actual robot; 1120 for programming bot
 
@@ -34,6 +40,20 @@ public class AutoBase extends LinearOpMode {
         br = hardwareMap.dcMotor.get("backright");
         //carousel = hardwareMap.dcMotor.get("carousel");
 
+        pivotLeft = hardwareMap.servo.get("pivotleft");
+        ServoControllerEx pivotLeftController = (ServoControllerEx) pivotLeft.getController();
+        int pivotLeftServoPort = pivotLeft.getPortNumber();
+        PwmControl.PwmRange pivotLeftPwmRange = new PwmControl.PwmRange(899, 2105);
+        pivotLeftController.setServoPwmRange(pivotLeftServoPort, pivotLeftPwmRange);
+        pivotLeft.setPosition(1); //starting position
+
+        pivotRight = hardwareMap.servo.get("pivotright");
+        ServoControllerEx pivotRightController = (ServoControllerEx) pivotRight.getController();
+        int pivotRightServoPort = pivotRight.getPortNumber();
+        PwmControl.PwmRange pivotRightPwmRange = new PwmControl.PwmRange(899, 2105);
+        pivotRightController.setServoPwmRange(pivotRightServoPort, pivotRightPwmRange);
+        pivotRight.setPosition(0); //starting position
+
 
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -48,6 +68,8 @@ public class AutoBase extends LinearOpMode {
         imageNavigation.init();
 
         startHeading = imu.getAdjustedAngle();
+
+
     }
 
     public void StopAll() {
