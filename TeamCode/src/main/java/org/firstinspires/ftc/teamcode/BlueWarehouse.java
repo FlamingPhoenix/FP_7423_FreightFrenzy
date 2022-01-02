@@ -2,11 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.util.Log;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
-@Autonomous(name="RedWarehouse", group = "none")
-
-public class RedWarehouse extends AutoBase {
+public class BlueWarehouse extends AutoBase {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -33,13 +29,16 @@ public class RedWarehouse extends AutoBase {
         }
 
         Drive(0.5f, 12, Direction.BACKWARD);
-        Turn(0.5f, 30, Direction.COUNTERCLOCKWISE, imu);
+        Turn(0.5f, 135, Direction.COUNTERCLOCKWISE, imu);
+
+
+        //drop freight
 
         Strafe(0.8f, 6, Direction.RIGHT);
         Turn(0.5f, 150, Direction.CLOCKWISE, imu);
         sleep(200);
 
-        DriveToPointHeading(0.35f, 18, -60);
+        DriveToPointHeading(0.35f, 18, -60);//coordinates r prob wrong
         StopAll();
         //drop freight
 
@@ -51,6 +50,5 @@ public class RedWarehouse extends AutoBase {
         Strafe(0.5f, 5, Direction.LEFT);
         DriveHeading(0.5f, 40, 90, 0.3f, Direction.BACKWARD);
     }
-
 
 }

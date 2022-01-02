@@ -13,11 +13,13 @@ public class AutoTest extends AutoBase {
         initialize();
         waitForStart();
 
-        Turn(1, 180, Direction.CLOCKWISE, imu);
+        MovePulley(0.5f, 1);
 
-        sleep(100);
+//        Turn(1, 180, Direction.CLOCKWISE, imu);
 
-        StrafeUntilHeading(0.6f, 2, startHeading + 180, 24, Direction.RIGHT);
+//        sleep(100);
+
+//        StrafeUntilHeading(0.6f, 2, startHeading + 180, 24, Direction.RIGHT);
 
 
         //DriveHeading(0.5f, 24, -45, Direction.FORWARD);

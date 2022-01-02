@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name="TeleOp Scrimmage", group="none")
+@TeleOp(name="TeleOp", group="none")
 public class Tele extends OpMode{
 
     DcMotor fr;
@@ -14,9 +16,12 @@ public class Tele extends OpMode{
     DcMotor br;
     DcMotor bl;
     DcMotor carousel;
+    DcMotor pulley;
 
     float x1, x2, y1, y2, tr, tl;
 //    boolean bpr;
+
+    float maxEncoderPulley = 420f; //448 is true max
 
     public void Drive(float x1, float y1, float x2) {
 
@@ -42,13 +47,17 @@ public class Tele extends OpMode{
         fl = hardwareMap.dcMotor.get("frontleft");
         br = hardwareMap.dcMotor.get("backright");
         bl = hardwareMap.dcMotor.get("backleft");
+        pulley = hardwareMap.dcMotor.get("pulley");
 
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
 
-//        fr.setDirection(DcMotorSimple.Direction.REVERSE); //uncomment for competition robot
+        fr.setDirection(DcMotorSimple.Direction.REVERSE); //uncomment for competition robot
 
         carousel = hardwareMap.dcMotor.get("carousel");
+
+        pulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        pulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     @Override
@@ -60,6 +69,14 @@ public class Tele extends OpMode{
         tr = gamepad1.right_trigger;
 //        bpr = gamepad1.right_bumper;
         tl = gamepad1.left_trigger;
+
+        if (gamepad2.left_stick_y < -0.1) {
+            pulley.setPower(-gamepad2.left_stick_y*0.75);
+        } else if (gamepad2.left_stick_y > 0.1) {
+            pulley.setPower(-gamepad2.left_stick_y*0.25);
+        } else {
+            pulley.setPower(0);
+        }
 
         double joystickLeftDistance = Math.pow(x1, 2) + Math.pow(y1, 2);
         if (joystickLeftDistance < 0.9) {

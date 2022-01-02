@@ -18,12 +18,15 @@ public class AutoBase extends LinearOpMode {
     public DcMotor fr;
     public DcMotor bl;
     public DcMotor br;
-    DcMotor carousel;
+    public DcMotor carousel;
+    public DcMotor pulley;
 
     public Servo pivotLeft;
     public Servo pivotRight;
 
     public float PPR = 537.7f; //537.7 for actual robot; 1120 for programming bot
+
+    public float maxEncoderPulley = 420f;
 
     public float diameter = 4;
 
@@ -33,26 +36,29 @@ public class AutoBase extends LinearOpMode {
 
     public float startHeading;
 
+    public float currentStage;
+
     public void initialize (){
         fl = hardwareMap.dcMotor.get("frontleft");
         fr = hardwareMap.dcMotor.get("frontright");
         bl = hardwareMap.dcMotor.get("backleft");
         br = hardwareMap.dcMotor.get("backright");
         //carousel = hardwareMap.dcMotor.get("carousel");
+        pulley = hardwareMap.dcMotor.get("pulley");
 
-        pivotLeft = hardwareMap.servo.get("pivotleft");
-        ServoControllerEx pivotLeftController = (ServoControllerEx) pivotLeft.getController();
-        int pivotLeftServoPort = pivotLeft.getPortNumber();
-        PwmControl.PwmRange pivotLeftPwmRange = new PwmControl.PwmRange(899, 2105);
-        pivotLeftController.setServoPwmRange(pivotLeftServoPort, pivotLeftPwmRange);
-        pivotLeft.setPosition(1); //starting position
-
-        pivotRight = hardwareMap.servo.get("pivotright");
-        ServoControllerEx pivotRightController = (ServoControllerEx) pivotRight.getController();
-        int pivotRightServoPort = pivotRight.getPortNumber();
-        PwmControl.PwmRange pivotRightPwmRange = new PwmControl.PwmRange(899, 2105);
-        pivotRightController.setServoPwmRange(pivotRightServoPort, pivotRightPwmRange);
-        pivotRight.setPosition(0); //starting position
+//        pivotLeft = hardwareMap.servo.get("pivotleft");
+//        ServoControllerEx pivotLeftController = (ServoControllerEx) pivotLeft.getController();
+//        int pivotLeftServoPort = pivotLeft.getPortNumber();
+//        PwmControl.PwmRange pivotLeftPwmRange = new PwmControl.PwmRange(899, 2105);
+//        pivotLeftController.setServoPwmRange(pivotLeftServoPort, pivotLeftPwmRange);
+//        pivotLeft.setPosition(1); //starting position
+//
+//        pivotRight = hardwareMap.servo.get("pivotright");
+//        ServoControllerEx pivotRightController = (ServoControllerEx) pivotRight.getController();
+//        int pivotRightServoPort = pivotRight.getPortNumber();
+//        PwmControl.PwmRange pivotRightPwmRange = new PwmControl.PwmRange(899, 2105);
+//        pivotRightController.setServoPwmRange(pivotRightServoPort, pivotRightPwmRange);
+//        pivotRight.setPosition(0); //starting position
 
 
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -522,6 +528,49 @@ public class AutoBase extends LinearOpMode {
         }
 
         StopAll();
+    }
+
+    public void MovePulley (float power, int stage) {
+
+        // stage can be 0, 1, 2 depending on the shipping hub level
+
+        int targetEncoderValue = 0;
+
+        if (stage == 1) {
+            targetEncoderValue = 200; // need to check
+        } else if (stage == 2) {
+            targetEncoderValue = 420; // need to check
+        }
+
+        pulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        pulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        int currentPosition = 0;
+
+        if (currentStage == 1) {
+            currentPosition = 200; // need to check
+        } else if (currentStage == 2) {
+            currentPosition = 420; // need to check
+        }
+
+        if (currentStage > stage) {
+            while (currentPosition > targetEncoderValue && opModeIsActive()) {
+                currentPosition = Math.abs(pulley.getCurrentPosition());
+                pulley.setPower(-power);
+                Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
+            }
+        } else if (currentStage < stage) {
+            while (currentPosition < targetEncoderValue && opModeIsActive()) {
+                currentPosition = Math.abs(pulley.getCurrentPosition());
+                pulley.setPower(power);
+                Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
+            }
+        }
+
+        pulley.setPower(0);
+
+        currentStage = stage;
+
     }
 
     @Override
