@@ -41,6 +41,7 @@ public class RedWarehouse extends AutoBase {
 
         DriveToPointHeading(0.35f, 18, -60);
         StopAll();
+        MovePulley(0.5f, 1);//stage tbd with ducky
         //drop freight
 
         Turn(0.5f, 90, Direction.COUNTERCLOCKWISE, imu);
@@ -50,6 +51,8 @@ public class RedWarehouse extends AutoBase {
         Log.i("[phoenix:passed]", String.format("getAdjustedAngle: %f", imu.getAdjustedAngle()));
         Strafe(0.5f, 5, Direction.LEFT);
         DriveHeading(0.5f, 40, 90, 0.3f, Direction.BACKWARD);
+
+        copyToTele();
     }
 
 

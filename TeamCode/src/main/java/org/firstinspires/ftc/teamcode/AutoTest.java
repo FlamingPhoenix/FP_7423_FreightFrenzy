@@ -6,9 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 public class AutoTest extends AutoBase {
 
-
-
-
     public void runOpMode() throws InterruptedException {
         initialize();
         waitForStart();

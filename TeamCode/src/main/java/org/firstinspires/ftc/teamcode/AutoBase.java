@@ -37,13 +37,14 @@ public class AutoBase extends LinearOpMode {
     public float startHeading;
 
     public float currentStage;
+    public float currentPosition;
 
     public void initialize (){
         fl = hardwareMap.dcMotor.get("frontleft");
         fr = hardwareMap.dcMotor.get("frontright");
         bl = hardwareMap.dcMotor.get("backleft");
         br = hardwareMap.dcMotor.get("backright");
-        //carousel = hardwareMap.dcMotor.get("carousel");
+        carousel = hardwareMap.dcMotor.get("carousel");
         pulley = hardwareMap.dcMotor.get("pulley");
 
 //        pivotLeft = hardwareMap.servo.get("pivotleft");
@@ -64,7 +65,7 @@ public class AutoBase extends LinearOpMode {
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
 
-//        fr.setDirection(DcMotorSimple.Direction.REVERSE); //for the actual robot
+        fr.setDirection(DcMotorSimple.Direction.REVERSE); //for the actual robot
 
         imu = new MyIMU(hardwareMap);
         BNO055IMU.Parameters p = new BNO055IMU.Parameters();
@@ -75,6 +76,7 @@ public class AutoBase extends LinearOpMode {
 
         startHeading = imu.getAdjustedAngle();
 
+        pulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
     }
 
@@ -542,26 +544,17 @@ public class AutoBase extends LinearOpMode {
             targetEncoderValue = 420; // need to check
         }
 
-        pulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         pulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        int currentPosition = 0;
-
-        if (currentStage == 1) {
-            currentPosition = 200; // need to check
-        } else if (currentStage == 2) {
-            currentPosition = 420; // need to check
-        }
 
         if (currentStage > stage) {
             while (currentPosition > targetEncoderValue && opModeIsActive()) {
-                currentPosition = Math.abs(pulley.getCurrentPosition());
+                currentPosition = pulley.getCurrentPosition();
                 pulley.setPower(-power);
                 Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
             }
         } else if (currentStage < stage) {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
-                currentPosition = Math.abs(pulley.getCurrentPosition());
+                currentPosition = pulley.getCurrentPosition();
                 pulley.setPower(power);
                 Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
             }
@@ -576,5 +569,10 @@ public class AutoBase extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+    }
+
+    public void copyToTele() {
+        Tele.autoCurrentPosition = currentPosition;
+        Tele.autoCurrentStage = currentStage;
     }
 }

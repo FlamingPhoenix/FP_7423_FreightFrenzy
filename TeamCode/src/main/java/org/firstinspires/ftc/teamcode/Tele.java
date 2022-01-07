@@ -18,7 +18,11 @@ public class Tele extends OpMode{
     DcMotor carousel;
     DcMotor pulley;
 
-    float x1, x2, y1, y2, tr, tl;
+    float x1, x2, y1, y2, tr, tl, tr2;
+
+    float currentPosition, currentStage;
+    public static float autoCurrentPosition, autoCurrentStage;
+
 //    boolean bpr;
 
     float maxEncoderPulley = 420f; //448 is true max
@@ -43,6 +47,9 @@ public class Tele extends OpMode{
 
     @Override
     public void init() {
+        currentPosition = autoCurrentPosition;
+        currentStage = autoCurrentStage;
+
         fr = hardwareMap.dcMotor.get("frontright");
         fl = hardwareMap.dcMotor.get("frontleft");
         br = hardwareMap.dcMotor.get("backright");
@@ -58,6 +65,11 @@ public class Tele extends OpMode{
 
         pulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         pulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        telemetry.addData("Ready for start %f", 0);
+        telemetry.update();
+
+
     }
 
     @Override
@@ -69,6 +81,7 @@ public class Tele extends OpMode{
         tr = gamepad1.right_trigger;
 //        bpr = gamepad1.right_bumper;
         tl = gamepad1.left_trigger;
+        tr2 = gamepad2.right_trigger;
 
         if (gamepad2.left_stick_y < -0.1) {
             pulley.setPower(-gamepad2.left_stick_y*0.75);
@@ -88,14 +101,12 @@ public class Tele extends OpMode{
             x2 = x2 / 2;
         }
 
-        if (tr > 0.1) {
-            carousel.setPower(tr);
-            telemetry.addData("Carousel Power: %f", tr);
+        if (tr2 > 0.1) {
+            carousel.setPower(-tr2);
+            telemetry.addData("Carousel Power: %f", -tr2);
             telemetry.update();
-        } else if (tl > 0.1) {
-            carousel.setPower(tl);
-            telemetry.addData("Carousel Power: %f", tl);
-            telemetry.update();
+        } else if (gamepad2.right_bumper) {
+            carousel.setPower(0.5);
         } else {
             carousel.setPower(0);
         }
