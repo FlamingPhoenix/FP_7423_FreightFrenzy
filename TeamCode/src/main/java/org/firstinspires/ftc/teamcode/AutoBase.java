@@ -19,7 +19,7 @@ public class AutoBase extends LinearOpMode {
     public DcMotor bl;
     public DcMotor br;
     public DcMotor carousel;
-    public DcMotor pulley;
+    public DcMotor pulley, pulley2;
 
     public Servo pivotLeft;
     public Servo pivotRight;
@@ -36,8 +36,7 @@ public class AutoBase extends LinearOpMode {
 
     public float startHeading;
 
-    public float currentStage;
-    public float currentPosition;
+    public int currentStage, currentPosition;
 
     public void initialize (){
         fl = hardwareMap.dcMotor.get("frontleft");
@@ -46,6 +45,7 @@ public class AutoBase extends LinearOpMode {
         br = hardwareMap.dcMotor.get("backright");
         carousel = hardwareMap.dcMotor.get("carousel");
         pulley = hardwareMap.dcMotor.get("pulley");
+        pulley2 = hardwareMap.dcMotor.get("pulley2");
 
 //        pivotLeft = hardwareMap.servo.get("pivotleft");
 //        ServoControllerEx pivotLeftController = (ServoControllerEx) pivotLeft.getController();
@@ -66,6 +66,7 @@ public class AutoBase extends LinearOpMode {
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
 
         fr.setDirection(DcMotorSimple.Direction.REVERSE); //for the actual robot
+        pulley2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         imu = new MyIMU(hardwareMap);
         BNO055IMU.Parameters p = new BNO055IMU.Parameters();
@@ -550,17 +551,20 @@ public class AutoBase extends LinearOpMode {
             while (currentPosition > targetEncoderValue && opModeIsActive()) {
                 currentPosition = pulley.getCurrentPosition();
                 pulley.setPower(-power);
+                pulley2.setPower(-power);
                 Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
             }
         } else if (currentStage < stage) {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
                 currentPosition = pulley.getCurrentPosition();
                 pulley.setPower(power);
+                pulley2.setPower(power);
                 Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
             }
         }
 
         pulley.setPower(0);
+        pulley2.setPower(0);
 
         currentStage = stage;
 

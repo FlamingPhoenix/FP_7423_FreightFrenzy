@@ -16,12 +16,12 @@ public class Tele extends OpMode{
     DcMotor br;
     DcMotor bl;
     DcMotor carousel;
-    DcMotor pulley;
+    DcMotor pulley, pulley2;
 
     float x1, x2, y1, y2, tr, tl, tr2;
 
-    float currentPosition, currentStage;
-    public static float autoCurrentPosition, autoCurrentStage;
+    int currentPosition, currentStage;
+    public static int autoCurrentPosition, autoCurrentStage;
 
 //    boolean bpr;
 
@@ -55,16 +55,18 @@ public class Tele extends OpMode{
         br = hardwareMap.dcMotor.get("backright");
         bl = hardwareMap.dcMotor.get("backleft");
         pulley = hardwareMap.dcMotor.get("pulley");
+        pulley2 = hardwareMap.dcMotor.get("pulley2");
 
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
 
         fr.setDirection(DcMotorSimple.Direction.REVERSE); //uncomment for competition robot
+        pulley2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         carousel = hardwareMap.dcMotor.get("carousel");
 
         pulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        pulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        pulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         telemetry.addData("Ready for start %f", 0);
         telemetry.update();
@@ -83,10 +85,16 @@ public class Tele extends OpMode{
         tl = gamepad1.left_trigger;
         tr2 = gamepad2.right_trigger;
 
-        if (gamepad2.left_stick_y < -0.1) {
+        Log.i("[phoenix:pulleyPosition]", String.format("currentPosition = %d, pulleyCurrentPositon = %d", currentPosition, pulley.getCurrentPosition()));
+
+        if (gamepad2.left_stick_y < -0.1 && currentPosition < maxEncoderPulley) {
             pulley.setPower(-gamepad2.left_stick_y*0.75);
-        } else if (gamepad2.left_stick_y > 0.1) {
+            pulley2.setPower(-gamepad2.left_stick_y*0.75);
+            currentPosition = pulley.getCurrentPosition();
+        } else if (gamepad2.left_stick_y > 0.1/* && currentPosition > 0*/) {
             pulley.setPower(-gamepad2.left_stick_y*0.25);
+            pulley2.setPower(-gamepad2.left_stick_y*0.25);
+            currentPosition = pulley.getCurrentPosition();
         } else {
             pulley.setPower(0);
         }
