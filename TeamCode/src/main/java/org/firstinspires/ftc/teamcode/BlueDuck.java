@@ -30,7 +30,7 @@ public class BlueDuck extends AutoBase {
         DriveHeading(0.5f, 60,  startHeading + 120, 0.3f, Direction.FORWARD);
         StrafeUntilHeading(0.5f, 2, startHeading + 180, 8, Direction.RIGHT);
 
-        copyToTele();
+        //copyToTele();
     }
 
 }

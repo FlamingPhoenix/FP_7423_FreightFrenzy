@@ -85,13 +85,13 @@ public class Tele extends OpMode{
         tl = gamepad1.left_trigger;
         tr2 = gamepad2.right_trigger;
 
-        Log.i("[phoenix:pulleyPosition]", String.format("currentPosition = %d, pulleyCurrentPositon = %d", currentPosition, pulley.getCurrentPosition()));
+        Log.i("[phoenix:pulleyPosition]", String.format("currentPosition = %d, adjustedCurrentPosition = %d", currentPosition, currentPosition + Globals.pulleyEncoder));
 
-        if (gamepad2.left_stick_y < -0.1 && currentPosition < maxEncoderPulley) {
+        if (gamepad2.left_stick_y < -0.1 && currentPosition + Globals.pulleyEncoder < maxEncoderPulley) {
             pulley.setPower(-gamepad2.left_stick_y*0.75);
             pulley2.setPower(-gamepad2.left_stick_y*0.75);
             currentPosition = pulley.getCurrentPosition();
-        } else if (gamepad2.left_stick_y > 0.1/* && currentPosition > 0*/) {
+        } else if (gamepad2.left_stick_y > 0.1 && currentPosition + Globals.pulleyEncoder > 0) {
             pulley.setPower(-gamepad2.left_stick_y*0.25);
             pulley2.setPower(-gamepad2.left_stick_y*0.25);
             currentPosition = pulley.getCurrentPosition();

@@ -550,6 +550,7 @@ public class AutoBase extends LinearOpMode {
         if (currentStage > stage) {
             while (currentPosition > targetEncoderValue && opModeIsActive()) {
                 currentPosition = pulley.getCurrentPosition();
+                Globals.pulleyEncoder = currentPosition;
                 pulley.setPower(-power);
                 pulley2.setPower(-power);
                 Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
@@ -557,6 +558,7 @@ public class AutoBase extends LinearOpMode {
         } else if (currentStage < stage) {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
                 currentPosition = pulley.getCurrentPosition();
+                Globals.pulleyEncoder = currentPosition;
                 pulley.setPower(power);
                 pulley2.setPower(power);
                 Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
@@ -575,8 +577,8 @@ public class AutoBase extends LinearOpMode {
 
     }
 
-    public void copyToTele() {
-        Tele.autoCurrentPosition = currentPosition;
-        Tele.autoCurrentStage = currentStage;
-    }
+//    public void copyToTele() {
+//        Tele.autoCurrentPosition = currentPosition;
+//        Tele.autoCurrentStage = currentStage;
+//    }
 }

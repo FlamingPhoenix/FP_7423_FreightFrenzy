@@ -51,7 +51,7 @@ public class BlueWarehouse extends AutoBase {
         Strafe(0.5f, 5, Direction.LEFT);
         DriveHeading(0.5f, 40, 90, 0.3f, Direction.BACKWARD);
 
-        copyToTele();
+        //copyToTele();
     }
 
 }

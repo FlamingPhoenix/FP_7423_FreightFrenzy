@@ -32,7 +32,7 @@ public class RedDuck extends AutoBase {
         DriveHeading(0.25f, 54,  startHeading + 155, 0.3f, Direction.FORWARD);
         StrafeUntilHeading(0.5f, 2, startHeading + 180, 10, Direction.LEFT);
 
-        copyToTele();
+        //copyToTele();
     }
 
 }
