@@ -66,7 +66,9 @@ public class Tele extends OpMode{
         carousel = hardwareMap.dcMotor.get("carousel");
 
         pulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        pulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        pulley2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        pulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        pulley2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         telemetry.addData("Ready for start %f", 0);
         telemetry.update();
@@ -87,17 +89,30 @@ public class Tele extends OpMode{
 
         Log.i("[phoenix:pulleyPosition]", String.format("currentPosition = %d, adjustedCurrentPosition = %d", currentPosition, currentPosition + Globals.pulleyEncoder));
 
-        if (gamepad2.left_stick_y < -0.1 && currentPosition + Globals.pulleyEncoder < maxEncoderPulley) {
-            pulley.setPower(-gamepad2.left_stick_y*0.75);
-            pulley2.setPower(-gamepad2.left_stick_y*0.75);
+        if (gamepad2.left_stick_y < -0.1) {
+            float pulleyPower = -gamepad2.left_stick_y * 0.9f;
+            if (pulleyPower > 1)
+                pulleyPower = 1;
+            Log.i("[phoenix:pulleyPosition]", String.format("power = %f", pulleyPower));
+
+            if (currentPosition + Globals.pulleyEncoder >= maxEncoderPulley) {
+                pulleyPower = 0.1f;
+            }
+            pulley.setPower(pulleyPower);
+            pulley2.setPower(pulleyPower);
             currentPosition = pulley.getCurrentPosition();
+            Log.i("[phoenix:pulleyPosition]", String.format("power = %f", pulleyPower));
         } else if (gamepad2.left_stick_y > 0.1 && currentPosition + Globals.pulleyEncoder > 0) {
-            pulley.setPower(-gamepad2.left_stick_y*0.25);
-            pulley2.setPower(-gamepad2.left_stick_y*0.25);
+            pulley.setPower(-gamepad2.left_stick_y*0.5);
+            pulley2.setPower(-gamepad2.left_stick_y*0.5);
             currentPosition = pulley.getCurrentPosition();
         } else {
             pulley.setPower(0);
+            pulley2.setPower(0);
+            currentPosition = pulley.getCurrentPosition();
         }
+
+        Log.i("[phoenix:pulleyPosition]", String.format("power = %f", pulley.getPower()));
 
         double joystickLeftDistance = Math.pow(x1, 2) + Math.pow(y1, 2);
         if (joystickLeftDistance < 0.9) {
