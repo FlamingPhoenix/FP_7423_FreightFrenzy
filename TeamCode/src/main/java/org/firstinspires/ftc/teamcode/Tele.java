@@ -21,6 +21,7 @@ public class Tele extends OpMode{
     float x1, x2, y1, y2, tr, tl, tr2;
 
     int currentPosition, currentStage;
+    int stage;
     public static int autoCurrentPosition, autoCurrentStage;
 
 //    boolean bpr;
@@ -113,6 +114,42 @@ public class Tele extends OpMode{
         }
 
         Log.i("[phoenix:pulleyPosition]", String.format("power = %f", pulley.getPower()));
+
+        int targetEncoderValue = 0;
+
+
+
+        if (gamepad2.dpad_up) {
+            stage = 2;
+            targetEncoderValue = 420;
+        } else if (gamepad2.dpad_right) {
+            stage = 1;
+            targetEncoderValue = 200;
+        } else if (gamepad2.dpad_down) {
+            targetEncoderValue = 0;
+            stage = 0;
+        }
+
+        int power = 1;
+        if (currentStage > stage) {
+            while (currentPosition > targetEncoderValue) {
+                currentPosition = pulley.getCurrentPosition();
+                Globals.pulleyEncoder = currentPosition;
+                pulley.setPower(-0.5*power);
+                pulley2.setPower(-0.5*power);
+                Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
+            }
+            currentStage = stage;
+        } else if (currentStage < stage) {
+            while (currentPosition < targetEncoderValue) {
+                currentPosition = pulley.getCurrentPosition();
+                Globals.pulleyEncoder = currentPosition;
+                pulley.setPower(power);
+                pulley2.setPower(power);
+                Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
+            }
+            currentStage = stage;
+        }
 
         double joystickLeftDistance = Math.pow(x1, 2) + Math.pow(y1, 2);
         if (joystickLeftDistance < 0.9) {

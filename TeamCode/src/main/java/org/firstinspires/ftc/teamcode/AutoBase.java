@@ -540,9 +540,9 @@ public class AutoBase extends LinearOpMode {
         int targetEncoderValue = 0;
 
         if (stage == 1) {
-            targetEncoderValue = 200; // need to check
+            targetEncoderValue = 200;
         } else if (stage == 2) {
-            targetEncoderValue = 420; // need to check
+            targetEncoderValue = 420;
         }
 
         pulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -565,10 +565,19 @@ public class AutoBase extends LinearOpMode {
             }
         }
 
-        pulley.setPower(0);
-        pulley2.setPower(0);
+        float backgroundPower = 0;
 
         currentStage = stage;
+
+        // w/o lift attachment
+        if (currentStage == 1) {
+            backgroundPower = 0.2f;
+        } else if (currentStage == 2) {
+            backgroundPower = 0.2f;
+        }
+
+        pulley.setPower(backgroundPower);
+        pulley2.setPower(backgroundPower);
 
     }
 

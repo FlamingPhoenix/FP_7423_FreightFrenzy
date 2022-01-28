@@ -12,6 +12,8 @@ public class AutoTest extends AutoBase {
 
         MovePulley(0.5f, 1);
 
+        sleep(30000);
+
 //        Turn(1, 180, Direction.CLOCKWISE, imu);
 
 //        sleep(100);
