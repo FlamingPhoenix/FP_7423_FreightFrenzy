@@ -20,6 +20,7 @@ public class AutoBase extends LinearOpMode {
     public DcMotor br;
     public DcMotor carousel;
     public DcMotor pulley, pulley2;
+    public DcMotor sweeper;
 
     public Servo pivotLeft;
     public Servo pivotRight;
@@ -46,6 +47,8 @@ public class AutoBase extends LinearOpMode {
         carousel = hardwareMap.dcMotor.get("carousel");
         pulley = hardwareMap.dcMotor.get("pulley");
         pulley2 = hardwareMap.dcMotor.get("pulley2");
+        sweeper = hardwareMap.dcMotor.get("sweeper");
+
 
 //        pivotLeft = hardwareMap.servo.get("pivotleft");
 //        ServoControllerEx pivotLeftController = (ServoControllerEx) pivotLeft.getController();

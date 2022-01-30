@@ -6,6 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PwmControl;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoControllerEx;
 import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="TeleOp", group="none")
@@ -17,11 +20,17 @@ public class Tele extends OpMode{
     DcMotor bl;
     DcMotor carousel;
     DcMotor pulley, pulley2;
+    DcMotor sweeper;
+
+    Servo intakeLeft, intakeRight;
+    Servo vbarLeft, vbarRight;
 
     float x1, x2, y1, y2, tr, tl, tr2;
 
     int currentPosition, currentStage;
     int stage;
+    float pos = 0.5f;
+    float vpos = 0f;
     public static int autoCurrentPosition, autoCurrentStage;
 
 //    boolean bpr;
@@ -57,6 +66,34 @@ public class Tele extends OpMode{
         bl = hardwareMap.dcMotor.get("backleft");
         pulley = hardwareMap.dcMotor.get("pulley");
         pulley2 = hardwareMap.dcMotor.get("pulley2");
+        sweeper = hardwareMap.dcMotor.get("sweeper");
+
+        intakeLeft = hardwareMap.servo.get("intakeleft");
+        ServoControllerEx intakeLeftController = (ServoControllerEx) intakeLeft.getController();
+        int intakeLeftServoPort = intakeLeft.getPortNumber();
+        PwmControl.PwmRange intakeLeftPwmRange = new PwmControl.PwmRange(600, 2400);
+        intakeLeftController.setServoPwmRange(intakeLeftServoPort, intakeLeftPwmRange);
+//        intakeLeft.setPosition(1); //starting position
+
+        intakeRight = hardwareMap.servo.get("intakeright");
+        ServoControllerEx intakeRightController = (ServoControllerEx) intakeRight.getController();
+        int intakeRightServoPort = intakeRight.getPortNumber();
+        PwmControl.PwmRange intakeRightPwmRange = new PwmControl.PwmRange(600, 2400);
+        intakeRightController.setServoPwmRange(intakeRightServoPort, intakeRightPwmRange);
+//        intakeRight.setPosition(0); //starting position
+
+        vbarLeft = hardwareMap.servo.get("vbarleft");
+        ServoControllerEx vbarLeftController = (ServoControllerEx) vbarLeft.getController();
+        int vbarLeftServoPort = vbarLeft.getPortNumber();
+        PwmControl.PwmRange vbarLeftPwmRange = new PwmControl.PwmRange(600, 2400);
+        vbarLeftController.setServoPwmRange(vbarLeftServoPort, vbarLeftPwmRange);
+
+        vbarRight = hardwareMap.servo.get("vbarright");
+        ServoControllerEx vbarRightController = (ServoControllerEx) vbarRight.getController();
+        int vbarRightServoPort = vbarRight.getPortNumber();
+        PwmControl.PwmRange vbarRightPwmRange = new PwmControl.PwmRange(600, 2400);
+        vbarRightController.setServoPwmRange(vbarRightServoPort, vbarRightPwmRange);
+
 
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -161,16 +198,60 @@ public class Tele extends OpMode{
             x2 = x2 / 2;
         }
 
-        if (tr2 > 0.1) {
-            carousel.setPower(-tr2);
-            telemetry.addData("Carousel Power: %f", -tr2);
-            telemetry.update();
-        } else if (gamepad2.right_bumper) {
-            carousel.setPower(0.5);
-        } else {
-            carousel.setPower(0);
-        }
+//        if (tr2 > 0.1) {
+//            carousel.setPower(-tr2);
+//            telemetry.addData("Carousel Power: %f", -tr2);
+//            telemetry.update();
+//        } else if (gamepad2.right_bumper) {
+//            carousel.setPower(0.5);
+//        } else {
+//            carousel.setPower(0);
+//        }
 
         Drive(x1, y1 * -1, x2);
+
+
+//        intakeRight.setPosition(pos);
+        intakeLeft.setPosition(pos);
+        if (gamepad2.a)
+            pos -= 0.01;
+        else if (gamepad2.y)
+            pos += 0.01;
+        Log.i("[pheonix:servoInfo]", String.format("currentServo = %f", intakeRight.getPosition()));
+//        telemetry.addData("pulleyPos: ", intakeLeft.getPosition());
+        telemetry.update();
+
+        if (tr2 > 0.7)
+            sweeper.setPower(1);
+        else if (tr2 > 0.1)
+            sweeper.setPower(tr2);
+        else if (gamepad2.right_bumper)
+            sweeper.setPower(-1);
+        else
+            sweeper.setPower(0);
+
+
+        vbarLeft.setPosition(vpos);
+        vbarRight.setPosition(vpos);
+        if (gamepad2.x)
+            vpos -= 0.01;
+        else if (gamepad2.b)
+            vpos += 0.01;
+        Log.i("[pheonix:servoInfo]", String.format("vbar right pos = %f", vbarRight.getPosition()));
+        Log.i("[pheonix:servoInfo]", String.format("v bar left pos = %f", vbarLeft.getPosition())); // limit: 0.05 bottom; 0.65 top
+        telemetry.addData("vbarright: ", vbarLeft.getPosition());
+        telemetry.addData("vbarleft: ", vbarLeft.getPosition());
+        telemetry.update();
+
+        if (tr2 > 0.7)
+            sweeper.setPower(1);
+        else if (tr2 > 0.1)
+            sweeper.setPower(tr2);
+        else if (gamepad2.right_bumper)
+            sweeper.setPower(-1);
+        else
+            sweeper.setPower(0);
+
+
     }
 }
