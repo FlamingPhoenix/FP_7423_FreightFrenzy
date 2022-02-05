@@ -10,7 +10,9 @@ public class AutoTest extends AutoBase {
         initialize();
         waitForStart();
 
-        MovePulley(0.5f, 1);
+
+
+        //MovePulley(0.5f, 1);
 
         sleep(30000);
 

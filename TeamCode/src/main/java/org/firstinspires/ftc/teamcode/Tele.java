@@ -73,7 +73,7 @@ public class Tele extends OpMode{
         int intakeLeftServoPort = intakeLeft.getPortNumber();
         PwmControl.PwmRange intakeLeftPwmRange = new PwmControl.PwmRange(600, 2400);
         intakeLeftController.setServoPwmRange(intakeLeftServoPort, intakeLeftPwmRange);
-//        intakeLeft.setPosition(1); //starting position
+        //intakeLeft.setPosition(1); //starting position
 
         intakeRight = hardwareMap.servo.get("intakeright");
         ServoControllerEx intakeRightController = (ServoControllerEx) intakeRight.getController();
@@ -211,14 +211,14 @@ public class Tele extends OpMode{
         Drive(x1, y1 * -1, x2);
 
 
-//        intakeRight.setPosition(pos);
-        intakeLeft.setPosition(pos);
+        intakeRight.setPosition(pos);
+//        intakeLeft.setPosition(pos); //servo all the way back is 1, down is 0.3
         if (gamepad2.a)
             pos -= 0.01;
         else if (gamepad2.y)
             pos += 0.01;
         Log.i("[pheonix:servoInfo]", String.format("currentServo = %f", intakeRight.getPosition()));
-//        telemetry.addData("pulleyPos: ", intakeLeft.getPosition());
+        telemetry.addData("pulleyPos: ", intakeRight.getPosition());
         telemetry.update();
 
         if (tr2 > 0.7)
@@ -231,16 +231,16 @@ public class Tele extends OpMode{
             sweeper.setPower(0);
 
 
-        vbarLeft.setPosition(vpos);
-        vbarRight.setPosition(vpos);
+        vbarLeft.setPosition(1);
+        vbarRight.setPosition(0);
         if (gamepad2.x)
             vpos -= 0.01;
         else if (gamepad2.b)
             vpos += 0.01;
         Log.i("[pheonix:servoInfo]", String.format("vbar right pos = %f", vbarRight.getPosition()));
         Log.i("[pheonix:servoInfo]", String.format("v bar left pos = %f", vbarLeft.getPosition())); // limit: 0.05 bottom; 0.65 top
-        telemetry.addData("vbarright: ", vbarLeft.getPosition());
-        telemetry.addData("vbarleft: ", vbarLeft.getPosition());
+//        telemetry.addData("vbarright: ", vbarLeft.getPosition());
+//        telemetry.addData("vbarleft: ", vbarLeft.getPosition());
         telemetry.update();
 
         if (tr2 > 0.7)
