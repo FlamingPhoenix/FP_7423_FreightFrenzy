@@ -232,7 +232,7 @@ public class Tele extends OpMode{
 
 
         vbarLeft.setPosition(1);
-        vbarRight.setPosition(0);
+        vbarRight.setPosition(vpos);
         if (gamepad2.x)
             vpos -= 0.01;
         else if (gamepad2.b)
