@@ -22,7 +22,7 @@ public class Tele extends OpMode{
     DcMotor pulley, pulley2;
     DcMotor sweeper;
 
-    Servo intakeLeft, intakeRight;
+    Servo intakeLeft, intakeRight; //intakeLeft is not used because one servo is enough
     Servo vbarLeft, vbarRight;
 
     float x1, x2, y1, y2, tr, tl, tr2;
@@ -30,7 +30,8 @@ public class Tele extends OpMode{
     int currentPosition, currentStage;
     int stage;
     float pos = 0.5f;
-    float vpos = 0f;
+    float vposR = 0.58f;
+    float vposL = 0.7f;
     public static int autoCurrentPosition, autoCurrentStage;
 
 //    boolean bpr;
@@ -68,7 +69,7 @@ public class Tele extends OpMode{
         pulley2 = hardwareMap.dcMotor.get("pulley2");
         sweeper = hardwareMap.dcMotor.get("sweeper");
 
-        intakeLeft = hardwareMap.servo.get("intakeleft");
+        intakeLeft = hardwareMap.servo.get("intakeleft"); //intakeLeft is not used because one servo is enough
         ServoControllerEx intakeLeftController = (ServoControllerEx) intakeLeft.getController();
         int intakeLeftServoPort = intakeLeft.getPortNumber();
         PwmControl.PwmRange intakeLeftPwmRange = new PwmControl.PwmRange(600, 2400);
@@ -93,6 +94,7 @@ public class Tele extends OpMode{
         int vbarRightServoPort = vbarRight.getPortNumber();
         PwmControl.PwmRange vbarRightPwmRange = new PwmControl.PwmRange(600, 2400);
         vbarRightController.setServoPwmRange(vbarRightServoPort, vbarRightPwmRange);
+        vbarRight.setPosition(0.58f);
 
 
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -212,13 +214,15 @@ public class Tele extends OpMode{
 
 
         intakeRight.setPosition(pos);
-//        intakeLeft.setPosition(pos); //servo all the way back is 1, down is 0.3
-        if (gamepad2.a)
-            pos -= 0.01;
-        else if (gamepad2.y)
-            pos += 0.01;
+//        intakeLeft.setPosition(pos); //intakeLeft is not used because one servo is enough
+        if (gamepad2.y)
+            pos = 0;
+        else if (gamepad2.x)
+            pos = 0.25f;
+        else if (gamepad2.a)
+            pos = 0.7f;
         Log.i("[pheonix:servoInfo]", String.format("currentServo = %f", intakeRight.getPosition()));
-        telemetry.addData("pulleyPos: ", intakeRight.getPosition());
+//        telemetry.addData("intakePos: ", intakeRight.getPosition());
         telemetry.update();
 
         if (tr2 > 0.7)
@@ -231,16 +235,20 @@ public class Tele extends OpMode{
             sweeper.setPower(0);
 
 
-        vbarLeft.setPosition(1);
-        vbarRight.setPosition(vpos);
-        if (gamepad2.x)
-            vpos -= 0.01;
-        else if (gamepad2.b)
-            vpos += 0.01;
+        vbarLeft.setPosition(vposL);
+        vbarRight.setPosition(vposR);
+        if (gamepad2.dpad_left) {
+            vposR += 0.01;
+            vposL -= 0.01;
+        }
+        else if (gamepad2.b) {
+            vposR -= 0.01;
+            vposL += 0.01;
+        }
         Log.i("[pheonix:servoInfo]", String.format("vbar right pos = %f", vbarRight.getPosition()));
         Log.i("[pheonix:servoInfo]", String.format("v bar left pos = %f", vbarLeft.getPosition())); // limit: 0.05 bottom; 0.65 top
-//        telemetry.addData("vbarright: ", vbarLeft.getPosition());
-//        telemetry.addData("vbarleft: ", vbarLeft.getPosition());
+//        telemetry.addData("vbarright: ", vbarRight.getPosition());
+        telemetry.addData("vbarleft: ", vbarLeft.getPosition());
         telemetry.update();
 
         if (tr2 > 0.7)
