@@ -201,22 +201,22 @@ public class Tele extends OpMode{
 
         Drive(x1, y1 * -1, x2);
 
-        if (gamepad2.y)
+        if (gamepad1.y)
             pos = 0;
-        else if (gamepad2.x)
+        else if (gamepad1.x)
             pos = 0.2f;
-        else if (gamepad2.a)
+        else if (gamepad1.a)
             pos = 0.7f;
 
         intakeRight.setPosition(pos);
 
         Log.i("[phoenix:servoInfo]", String.format("currentServo = %f", intakeRight.getPosition()));
 
-        if (tr2 > 0.7)
+        if (tr > 0.7)
             sweeper.setPower(1);
-        else if (tr2 > 0.1)
-            sweeper.setPower(tr2);
-        else if (gamepad2.right_bumper)
+        else if (tr > 0.1)
+            sweeper.setPower(tr);
+        else if (gamepad1.right_bumper)
             sweeper.setPower(-1);
         else
             sweeper.setPower(0);
@@ -236,15 +236,5 @@ public class Tele extends OpMode{
 
         telemetry.addData("v bar right position: ", vbarRight.getPosition());
         telemetry.update();
-
-        if (tr2 > 0.7)
-            sweeper.setPower(1);
-        else if (tr2 > 0.1)
-            sweeper.setPower(tr2);
-        else if (gamepad2.right_bumper)
-            sweeper.setPower(-1);
-        else
-            sweeper.setPower(0);
-
     }
 }
