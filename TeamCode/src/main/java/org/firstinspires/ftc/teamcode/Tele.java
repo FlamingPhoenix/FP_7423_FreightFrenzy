@@ -29,8 +29,8 @@ public class Tele extends OpMode{
 
     int currentPosition, currentStage;
     int stage;
-    float pos = 0.7f;
-    float vposR = 0.58f;
+    float pos = 0;
+    float vposR = 0.8f;
     float vposL = 0.7f;
     public static int autoCurrentPosition, autoCurrentStage;
 
@@ -87,7 +87,7 @@ public class Tele extends OpMode{
         int vbarRightServoPort = vbarRight.getPortNumber();
         PwmControl.PwmRange vbarRightPwmRange = new PwmControl.PwmRange(600, 2400);
         vbarRightController.setServoPwmRange(vbarRightServoPort, vbarRightPwmRange);
-        vbarRight.setPosition(0.58f);
+        vbarRight.setPosition(0.8f);
 
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -165,7 +165,7 @@ public class Tele extends OpMode{
                 Globals.pulleyEncoder = currentPosition;
                 pulley.setPower(-0.5*power);
                 pulley2.setPower(-0.5*power);
-                Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
+                Log.i("[phoenix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
             }
             currentStage = stage;
         } else if (currentStage < stage) {
@@ -174,7 +174,7 @@ public class Tele extends OpMode{
                 Globals.pulleyEncoder = currentPosition;
                 pulley.setPower(power);
                 pulley2.setPower(power);
-                Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
+                Log.i("[phoenix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
             }
             currentStage = stage;
         }
@@ -210,7 +210,7 @@ public class Tele extends OpMode{
 
         intakeRight.setPosition(pos);
 
-        Log.i("[pheonix:servoInfo]", String.format("currentServo = %f", intakeRight.getPosition()));
+        Log.i("[phoenix:servoInfo]", String.format("currentServo = %f", intakeRight.getPosition()));
 
         if (tr2 > 0.7)
             sweeper.setPower(1);
@@ -221,18 +221,21 @@ public class Tele extends OpMode{
         else
             sweeper.setPower(0);
 
-        vbarLeft.setPosition(vposL);
+        //vbarLeft.setPosition(vposL);
         vbarRight.setPosition(vposR);
         if (gamepad2.dpad_left) {
-            vposR += 0.01;
-            vposL -= 0.01;
+            vposR += 0.0005; // 0.785 to pick up freight; 0.69 to pull out; 0.2 to drop freight; 0.8 initialize
+            vposL -= 0.0005;
         }
         else if (gamepad2.b) {
-            vposR -= 0.01;
-            vposL += 0.01;
+            vposR -= 0.0005;
+            vposL += 0.0005;
         }
-        Log.i("[pheonix:servoInfo]", String.format("vbar right pos = %f", vbarRight.getPosition()));
-        Log.i("[pheonix:servoInfo]", String.format("v bar left pos = %f", vbarLeft.getPosition())); // limit: 0.05 bottom; 0.65 top
+        Log.i("[phoenix:servoInfo]", String.format("vbar right pos = %f", vbarRight.getPosition()));
+        Log.i("[phoenix:servoInfo]", String.format("v bar left pos = %f", vbarLeft.getPosition())); // limit: 0.05 bottom; 0.65 top
+
+        telemetry.addData("v bar right position: ", vbarRight.getPosition());
+        telemetry.update();
 
         if (tr2 > 0.7)
             sweeper.setPower(1);

@@ -119,15 +119,19 @@ public class TeleTest extends OpMode{
         tr2 = gamepad2.right_trigger;
 
         if (gamepad2.dpad_left) {
-            vposR = 0;
-            vposL = 1;
+            vposR += 0.001f;//zero to 0.78
+            vposL -= 0.001f;
         }
-        else if (gamepad2.b) {
-            vposR = 0.5f;
-            vposL = 0.5f;
+        else if (gamepad2.dpad_right) {
+            vposR -= 0.001f;
+            vposL += 0.001f;
         }
 
-        vbarLeft.setPosition(vposL);
+        //vbarLeft.setPosition(vposL);
         vbarRight.setPosition(vposR);
+
+        Log.i("[pheonix:servoInfo]", String.format("vbar right pos = %f", vbarRight.getPosition()));
+        telemetry.addData("v bar right position: ", vbarRight.getPosition());
+        telemetry.update();
     }
 }
