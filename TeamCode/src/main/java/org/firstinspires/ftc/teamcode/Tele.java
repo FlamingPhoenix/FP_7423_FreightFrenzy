@@ -24,6 +24,7 @@ public class Tele extends OpMode{
 
     Servo intakeLeft, intakeRight; //intakeLeft is not used because one servo is enough
     Servo vbarLeft, vbarRight;
+    Servo finger;
 
     float x1, x2, y1, y2, tr, tl, tr2;
 
@@ -32,7 +33,9 @@ public class Tele extends OpMode{
     float pos = 0;
     float vposR = 0.8f;
     float vposL = 0.7f;
+    float fpos = 0.2f;
     public static int autoCurrentPosition, autoCurrentStage;
+    int targetEncoderValue = 0;
 
 //    boolean bpr;
 
@@ -89,10 +92,17 @@ public class Tele extends OpMode{
         vbarRightController.setServoPwmRange(vbarRightServoPort, vbarRightPwmRange);
         vbarRight.setPosition(0.8f);
 
+        finger = hardwareMap.servo.get("finger");
+        ServoControllerEx fingerController = (ServoControllerEx) finger.getController();
+        int fingerServoPort = finger.getPortNumber();
+        PwmControl.PwmRange fingerPwmRange = new PwmControl.PwmRange(600, 2400);
+        fingerController.setServoPwmRange(fingerServoPort, fingerPwmRange);
+        finger.setPosition(0.2f);
+
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        fr.setDirection(DcMotorSimple.Direction.REVERSE); //uncomment for competition robot
+        fr.setDirection(DcMotorSimple.Direction.REVERSE);
         pulley2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         carousel = hardwareMap.dcMotor.get("carousel");
@@ -113,58 +123,50 @@ public class Tele extends OpMode{
         y1 = gamepad1.left_stick_y;
         x2 = gamepad1.right_stick_x;
         y2 = gamepad1.right_stick_y;
-        tr = gamepad1.right_trigger;
 //        bpr = gamepad1.right_bumper;
-        tl = gamepad1.left_trigger;
-        tr2 = gamepad2.right_trigger;
+//        tl = gamepad1.left_trigger;
 
-        Log.i("[phoenix:pulleyPosition]", String.format("currentPosition = %d, adjustedCurrentPosition = %d", currentPosition, currentPosition + Globals.pulleyEncoder));
-
-        if (gamepad2.left_stick_y < -0.1) {
-            float pulleyPower = -gamepad2.left_stick_y * 0.9f;
-            if (pulleyPower > 1)
-                pulleyPower = 1;
-            Log.i("[phoenix:pulleyPosition]", String.format("power = %f", pulleyPower));
-
-            if (currentPosition + Globals.pulleyEncoder >= maxEncoderPulley) {
-                pulleyPower = 0.1f;
-            }
-            pulley.setPower(pulleyPower);
-            pulley2.setPower(pulleyPower);
-            currentPosition = pulley.getCurrentPosition();
-            Log.i("[phoenix:pulleyPosition]", String.format("power = %f", pulleyPower));
-        } else if (gamepad2.left_stick_y > 0.1 && currentPosition + Globals.pulleyEncoder > 0) {
-            pulley.setPower(-gamepad2.left_stick_y*0.5);
-            pulley2.setPower(-gamepad2.left_stick_y*0.5);
-            currentPosition = pulley.getCurrentPosition();
-        } else {
-            pulley.setPower(0);
-            pulley2.setPower(0);
-            currentPosition = pulley.getCurrentPosition();
-        }
-
-        Log.i("[phoenix:pulleyPosition]", String.format("power = %f", pulley.getPower()));
-
-        int targetEncoderValue = 0;
+//        if (gamepad2.left_stick_y < -0.1) {
+//            float pulleyPower = -gamepad2.left_stick_y * 0.9f;
+//            if (pulleyPower > 1)
+//                pulleyPower = 1;
+//            Log.i("[phoenix:pulleyPos]", String.format("power = %f", pulleyPower));
+//
+//            if (currentPosition + Globals.pulleyEncoder >= maxEncoderPulley) {
+//                pulleyPower = 0.1f;
+//            }
+//            pulley.setPower(pulleyPower);
+//            pulley2.setPower(pulleyPower);
+//            currentPosition = pulley.getCurrentPosition();
+//            Log.i("[phoenix:pulleyPos]", String.format("power = %f", pulleyPower));
+//        } else if (gamepad2.left_stick_y > 0.1 && currentPosition + Globals.pulleyEncoder > 0) {
+//            pulley.setPower(-gamepad2.left_stick_y*0.5);
+//            pulley2.setPower(-gamepad2.left_stick_y*0.5);
+//            currentPosition = pulley.getCurrentPosition();
+//        }
+//        else { //commented out now because it's causing issues with one button stage movement
+//            pulley.setPower(0);
+//            pulley2.setPower(0);
+//            currentPosition = pulley.getCurrentPosition();
+//        }
 
         if (gamepad2.dpad_up) {
-            stage = 2;
+            stage = 2; // upper shipping hub
             targetEncoderValue = 420;
         } else if (gamepad2.dpad_right) {
-            stage = 1;
+            stage = 1; // middle shipping hub
             targetEncoderValue = 200;
         } else if (gamepad2.dpad_down) {
             targetEncoderValue = 0;
-            stage = 0;
+            stage = 0; // lower shipping hub
         }
 
-        int power = 1;
         if (currentStage > stage) {
             while (currentPosition > targetEncoderValue) {
                 currentPosition = pulley.getCurrentPosition();
                 Globals.pulleyEncoder = currentPosition;
-                pulley.setPower(-0.5*power);
-                pulley2.setPower(-0.5*power);
+                pulley.setPower(-0.5f);
+                pulley2.setPower(-0.5f);
                 Log.i("[phoenix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
             }
             currentStage = stage;
@@ -172,12 +174,22 @@ public class Tele extends OpMode{
             while (currentPosition < targetEncoderValue) {
                 currentPosition = pulley.getCurrentPosition();
                 Globals.pulleyEncoder = currentPosition;
-                pulley.setPower(power);
-                pulley2.setPower(power);
-                Log.i("[phoenix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
+                //pulley.setPower(1);
+                pulley2.setPower(1.0);
+                Log.i("[phoenix:pulleyInfo]", String.format("currentPulley = %d;  targetEncode=%d",  currentPosition, targetEncoderValue));
             }
             currentStage = stage;
+            Log.i("[phoenix:pulleyInfo]", "Set the currentStage");
+
+        } else if (currentStage == 1 || currentStage == 2){
+            pulley.setPower(0.1f);
+            pulley2.setPower(0.1f);
+        } else{
+            pulley.setPower(0);
+            pulley2.setPower(0);
         }
+
+        Log.i("[phoenix:pulleyPos]", String.format("power = %f", pulley.getPower()));
 
         double joystickLeftDistance = Math.pow(x1, 2) + Math.pow(y1, 2);
         if (joystickLeftDistance < 0.9) {
@@ -189,9 +201,9 @@ public class Tele extends OpMode{
             x2 = x2 / 2;
         }
 
-//        if (tr2 > 0.1) {
-//            carousel.setPower(-tr2);
-//            telemetry.addData("Carousel Power: %f", -tr2);
+//        if (gamepad2.right_trigger > 0.1) {
+//            carousel.setPower(-gamepad2.right_trigger);
+//            telemetry.addData("Carousel Power: %f", -gamepad2.right_trigger);
 //            telemetry.update();
 //        } else if (gamepad2.right_bumper) {
 //            carousel.setPower(0.5);
@@ -204,7 +216,7 @@ public class Tele extends OpMode{
         if (gamepad1.y)
             pos = 0;
         else if (gamepad1.x)
-            pos = 0.2f;
+            pos = 0.25f;
         else if (gamepad1.a)
             pos = 0.7f;
 
@@ -212,25 +224,34 @@ public class Tele extends OpMode{
 
         Log.i("[phoenix:servoInfo]", String.format("currentServo = %f", intakeRight.getPosition()));
 
-        if (tr > 0.7)
+        if (gamepad1.right_trigger > 0.7)
             sweeper.setPower(1);
-        else if (tr > 0.1)
-            sweeper.setPower(tr);
+        else if (gamepad1.right_trigger > 0.1)
+            sweeper.setPower(gamepad1.right_trigger);
         else if (gamepad1.right_bumper)
             sweeper.setPower(-1);
         else
             sweeper.setPower(0);
 
         //vbarLeft.setPosition(vposL);
+        if (gamepad2.a)
+            vposR = 0.785f;
+        else if (gamepad2.x) {
+            vposR = 0.69f;
+            fpos = 0.3f;
+        }
+        else if (gamepad2.y)
+            vposR = 0.2f;
+
         vbarRight.setPosition(vposR);
-        if (gamepad2.dpad_left) {
-            vposR += 0.0005; // 0.785 to pick up freight; 0.69 to pull out; 0.2 to drop freight; 0.8 initialize
-            vposL -= 0.0005;
-        }
-        else if (gamepad2.b) {
-            vposR -= 0.0005;
-            vposL += 0.0005;
-        }
+
+        if (gamepad2.right_trigger > 0.7)
+            fpos = 0.5f;
+        else if (gamepad2.right_bumper)
+            fpos = 0.1f;
+
+        finger.setPosition(fpos);
+
         Log.i("[phoenix:servoInfo]", String.format("vbar right pos = %f", vbarRight.getPosition()));
         Log.i("[phoenix:servoInfo]", String.format("v bar left pos = %f", vbarLeft.getPosition())); // limit: 0.05 bottom; 0.65 top
 

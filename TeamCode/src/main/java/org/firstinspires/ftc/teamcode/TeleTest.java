@@ -24,6 +24,7 @@ public class TeleTest extends OpMode{
 
     Servo intakeLeft, intakeRight; //intakeLeft is not used because one servo is enough
     Servo vbarLeft, vbarRight;
+    Servo finger;
 
     float x1, x2, y1, y2, tr, tl, tr2;
 
@@ -32,6 +33,8 @@ public class TeleTest extends OpMode{
     float pos = 0.5f;
     float vposR = 0.58f;
     float vposL = 0.7f;
+    float fpos = 0.5f;
+
     public static int autoCurrentPosition, autoCurrentStage;
 
 //    boolean bpr;
@@ -74,7 +77,7 @@ public class TeleTest extends OpMode{
         int intakeRightServoPort = intakeRight.getPortNumber();
         PwmControl.PwmRange intakeRightPwmRange = new PwmControl.PwmRange(600, 2400);
         intakeRightController.setServoPwmRange(intakeRightServoPort, intakeRightPwmRange);
-        intakeRight.setPosition(0); //starting position
+//        intakeRight.setPosition(0); //starting position
 
         vbarLeft = hardwareMap.servo.get("vbarleft");
         ServoControllerEx vbarLeftController = (ServoControllerEx) vbarLeft.getController();
@@ -87,7 +90,14 @@ public class TeleTest extends OpMode{
         int vbarRightServoPort = vbarRight.getPortNumber();
         PwmControl.PwmRange vbarRightPwmRange = new PwmControl.PwmRange(600, 2400);
         vbarRightController.setServoPwmRange(vbarRightServoPort, vbarRightPwmRange);
-        vbarRight.setPosition(0.58f);
+//        vbarRight.setPosition(0.58f);
+
+        finger = hardwareMap.servo.get("finger");
+        ServoControllerEx fingerController = (ServoControllerEx) finger.getController();
+        int fingerServoPort = finger.getPortNumber();
+        PwmControl.PwmRange fingerPwmRange = new PwmControl.PwmRange(750, 2250);
+        fingerController.setServoPwmRange(fingerServoPort, fingerPwmRange);
+
 
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -119,19 +129,18 @@ public class TeleTest extends OpMode{
         tr2 = gamepad2.right_trigger;
 
         if (gamepad2.dpad_left) {
-            vposR += 0.001f;//zero to 0.78
-            vposL -= 0.001f;
+            fpos -= 0.0005f;
         }
-        else if (gamepad2.dpad_right) {
-            vposR -= 0.001f;
-            vposL += 0.001f;
+        else if (gamepad2.b) {
+            fpos += 0.0005f;
         }
+
+        finger.setPosition(fpos);
 
         //vbarLeft.setPosition(vposL);
-        vbarRight.setPosition(vposR);
 
         Log.i("[pheonix:servoInfo]", String.format("vbar right pos = %f", vbarRight.getPosition()));
-        telemetry.addData("v bar right position: ", vbarRight.getPosition());
+        telemetry.addData("finger position: ", finger.getPosition());
         telemetry.update();
     }
 }
