@@ -123,32 +123,6 @@ public class Tele extends OpMode{
         y1 = gamepad1.left_stick_y;
         x2 = gamepad1.right_stick_x;
         y2 = gamepad1.right_stick_y;
-//        bpr = gamepad1.right_bumper;
-//        tl = gamepad1.left_trigger;
-
-//        if (gamepad2.left_stick_y < -0.1) {
-//            float pulleyPower = -gamepad2.left_stick_y * 0.9f;
-//            if (pulleyPower > 1)
-//                pulleyPower = 1;
-//            Log.i("[phoenix:pulleyPos]", String.format("power = %f", pulleyPower));
-//
-//            if (currentPosition + Globals.pulleyEncoder >= maxEncoderPulley) {
-//                pulleyPower = 0.1f;
-//            }
-//            pulley.setPower(pulleyPower);
-//            pulley2.setPower(pulleyPower);
-//            currentPosition = pulley.getCurrentPosition();
-//            Log.i("[phoenix:pulleyPos]", String.format("power = %f", pulleyPower));
-//        } else if (gamepad2.left_stick_y > 0.1 && currentPosition + Globals.pulleyEncoder > 0) {
-//            pulley.setPower(-gamepad2.left_stick_y*0.5);
-//            pulley2.setPower(-gamepad2.left_stick_y*0.5);
-//            currentPosition = pulley.getCurrentPosition();
-//        }
-//        else { //commented out now because it's causing issues with one button stage movement
-//            pulley.setPower(0);
-//            pulley2.setPower(0);
-//            currentPosition = pulley.getCurrentPosition();
-//        }
 
         if (gamepad2.dpad_up) {
             stage = 2; // upper shipping hub
@@ -162,23 +136,23 @@ public class Tele extends OpMode{
         }
 
         if (currentStage > stage) {
-            while (currentPosition > targetEncoderValue) {
+            if (currentPosition + Globals.pulleyEncoder > targetEncoderValue) {
                 currentPosition = pulley.getCurrentPosition();
-                Globals.pulleyEncoder = currentPosition;
                 pulley.setPower(-0.5f);
                 pulley2.setPower(-0.5f);
                 Log.i("[phoenix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
+            } else {
+                currentStage = stage;
             }
-            currentStage = stage;
         } else if (currentStage < stage) {
-            while (currentPosition < targetEncoderValue) {
+            if (currentPosition + Globals.pulleyEncoder < targetEncoderValue) {
                 currentPosition = pulley.getCurrentPosition();
-                Globals.pulleyEncoder = currentPosition;
-                //pulley.setPower(1);
+                pulley.setPower(1);
                 pulley2.setPower(1.0);
                 Log.i("[phoenix:pulleyInfo]", String.format("currentPulley = %d;  targetEncode=%d",  currentPosition, targetEncoderValue));
+            } else{
+                currentStage = stage;
             }
-            currentStage = stage;
             Log.i("[phoenix:pulleyInfo]", "Set the currentStage");
 
         } else if (currentStage == 1 || currentStage == 2){
@@ -201,15 +175,15 @@ public class Tele extends OpMode{
             x2 = x2 / 2;
         }
 
-//        if (gamepad2.right_trigger > 0.1) {
-//            carousel.setPower(-gamepad2.right_trigger);
-//            telemetry.addData("Carousel Power: %f", -gamepad2.right_trigger);
-//            telemetry.update();
-//        } else if (gamepad2.right_bumper) {
-//            carousel.setPower(0.5);
-//        } else {
-//            carousel.setPower(0);
-//        }
+        if (gamepad1.left_trigger > 0.1) {
+            carousel.setPower(-gamepad2.right_trigger);
+            telemetry.addData("Carousel Power: %f", -gamepad2.right_trigger);
+            telemetry.update();
+        } else if (gamepad2.left_bumper) {
+            carousel.setPower(0.5);
+        } else {
+            carousel.setPower(0);
+        }
 
         Drive(x1, y1 * -1, x2);
 
@@ -233,14 +207,13 @@ public class Tele extends OpMode{
         else
             sweeper.setPower(0);
 
-        //vbarLeft.setPosition(vposL);
-        if (gamepad2.a)
+        if (gamepad2.dpad_left)
             vposR = 0.785f;
         else if (gamepad2.x) {
             vposR = 0.69f;
             fpos = 0.3f;
         }
-        else if (gamepad2.y)
+        else if (gamepad2.b)
             vposR = 0.2f;
 
         vbarRight.setPosition(vposR);
@@ -253,7 +226,6 @@ public class Tele extends OpMode{
         finger.setPosition(fpos);
 
         Log.i("[phoenix:servoInfo]", String.format("vbar right pos = %f", vbarRight.getPosition()));
-        Log.i("[phoenix:servoInfo]", String.format("v bar left pos = %f", vbarLeft.getPosition())); // limit: 0.05 bottom; 0.65 top
 
         telemetry.addData("v bar right position: ", vbarRight.getPosition());
         telemetry.update();
