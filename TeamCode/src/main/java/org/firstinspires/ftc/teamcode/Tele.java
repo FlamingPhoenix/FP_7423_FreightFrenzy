@@ -30,12 +30,21 @@ public class Tele extends OpMode{
 
     int currentPosition, currentStage;
     int stage;
-    float pos = 0;
-    float vposR = 0.8f;
-    float vposL = 0.7f;
+    float intakePos = 0.7f;
+    float vposR = 0.8f; // 0.785 to pick up freight; 0.69 to pull out; 0.2 to drop freight; 0.8 initialize
     float fpos = 0.2f;
     public static int autoCurrentPosition, autoCurrentStage;
     int targetEncoderValue = 0;
+    boolean isDropping = false;
+
+    boolean isReturning = false;
+    double returningTime;
+
+    boolean isTransferring = false;
+    double intakeTime;
+
+    boolean isClamping = false;
+    double clampTime;
 
 //    boolean bpr;
 
@@ -77,7 +86,7 @@ public class Tele extends OpMode{
         int intakeRightServoPort = intakeRight.getPortNumber();
         PwmControl.PwmRange intakeRightPwmRange = new PwmControl.PwmRange(600, 2400);
         intakeRightController.setServoPwmRange(intakeRightServoPort, intakeRightPwmRange);
-        intakeRight.setPosition(0); //starting position
+        intakeRight.setPosition(intakePos); //starting position
 
         vbarLeft = hardwareMap.servo.get("vbarleft");
         ServoControllerEx vbarLeftController = (ServoControllerEx) vbarLeft.getController();
@@ -90,19 +99,18 @@ public class Tele extends OpMode{
         int vbarRightServoPort = vbarRight.getPortNumber();
         PwmControl.PwmRange vbarRightPwmRange = new PwmControl.PwmRange(600, 2400);
         vbarRightController.setServoPwmRange(vbarRightServoPort, vbarRightPwmRange);
-        vbarRight.setPosition(0.8f);
+        vbarRight.setPosition(vposR);
 
         finger = hardwareMap.servo.get("finger");
         ServoControllerEx fingerController = (ServoControllerEx) finger.getController();
         int fingerServoPort = finger.getPortNumber();
         PwmControl.PwmRange fingerPwmRange = new PwmControl.PwmRange(600, 2400);
         fingerController.setServoPwmRange(fingerServoPort, fingerPwmRange);
-        finger.setPosition(0.2f);
+        finger.setPosition(fpos);
 
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        fr.setDirection(DcMotorSimple.Direction.REVERSE);
         pulley2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         carousel = hardwareMap.dcMotor.get("carousel");
@@ -137,19 +145,44 @@ public class Tele extends OpMode{
 
         if (currentStage > stage) {
             if (currentPosition + Globals.pulleyEncoder > targetEncoderValue) {
-                currentPosition = pulley.getCurrentPosition();
-                pulley.setPower(-0.5f);
-                pulley2.setPower(-0.5f);
+                if (!isDropping && !isReturning) {
+                    isReturning = true;
+                    returningTime = System.currentTimeMillis() + 1000;
+                    vposR = 0.73f;
+                    fpos = 0.5f;
+                    vbarRight.setPosition(vposR);
+                    finger.setPosition(fpos);
+                } else if (isReturning && System.currentTimeMillis() - returningTime >= 0) {
+                    currentPosition = pulley.getCurrentPosition();
+                    pulley.setPower(-0.5f);
+                    pulley2.setPower(-0.5f);
+                    isReturning = false;
+                }
                 Log.i("[phoenix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
             } else {
                 currentStage = stage;
+
+                if (currentStage == 0) {
+                    fpos = 0;
+                    finger.setPosition(fpos);
+                }
             }
         } else if (currentStage < stage) {
             if (currentPosition + Globals.pulleyEncoder < targetEncoderValue) {
+                if (!isDropping) {
+                    vposR = 0.73f;
+                    vbarRight.setPosition(vposR);
+                }
                 currentPosition = pulley.getCurrentPosition();
                 pulley.setPower(1);
-                pulley2.setPower(1.0);
+                pulley2.setPower(1);
                 Log.i("[phoenix:pulleyInfo]", String.format("currentPulley = %d;  targetEncode=%d",  currentPosition, targetEncoderValue));
+
+                if (currentStage == 0 && currentPosition + Globals.pulleyEncoder >= 180) {
+                    vposR = 0.2f;
+                    isDropping = true;
+                    vbarRight.setPosition(vposR);
+                }
             } else{
                 currentStage = stage;
             }
@@ -158,9 +191,11 @@ public class Tele extends OpMode{
         } else if (currentStage == 1 || currentStage == 2){
             pulley.setPower(0.1f);
             pulley2.setPower(0.1f);
-        } else{
+        } else {
             pulley.setPower(0);
             pulley2.setPower(0);
+            vposR = 0.785f;
+            vbarRight.setPosition(vposR);
         }
 
         Log.i("[phoenix:pulleyPos]", String.format("power = %f", pulley.getPower()));
@@ -187,14 +222,28 @@ public class Tele extends OpMode{
 
         Drive(x1, y1 * -1, x2);
 
-        if (gamepad1.y)
-            pos = 0;
-        else if (gamepad1.x)
-            pos = 0.25f;
-        else if (gamepad1.a)
-            pos = 0.7f;
+        if (isTransferring && System.currentTimeMillis() - intakeTime > 0) {
+            isTransferring = false;
+            sweeper.setPower(0);
+            intakePos = 0.7f;
 
-        intakeRight.setPosition(pos);
+            isClamping = true;
+            clampTime = System.currentTimeMillis() + 1000;
+        }
+
+        if (gamepad1.y)
+            intakePos = 0;
+        else if (gamepad1.x && !isTransferring) {
+            intakeTime = System.currentTimeMillis() + 2000;
+            intakePos = 0.4f;
+            fpos = 0.1f;
+            sweeper.setPower(1);
+            isTransferring = true;
+        }
+        else if (gamepad1.a)
+            intakePos = 0.7f;
+
+        intakeRight.setPosition(intakePos);
 
         Log.i("[phoenix:servoInfo]", String.format("currentServo = %f", intakeRight.getPosition()));
 
@@ -204,24 +253,23 @@ public class Tele extends OpMode{
             sweeper.setPower(gamepad1.right_trigger);
         else if (gamepad1.right_bumper)
             sweeper.setPower(-1);
-        else
+        else if (!isTransferring)
             sweeper.setPower(0);
 
-        if (gamepad2.dpad_left)
-            vposR = 0.785f;
-        else if (gamepad2.x) {
-            vposR = 0.69f;
-            fpos = 0.3f;
-        }
-        else if (gamepad2.b)
-            vposR = 0.2f;
-
-        vbarRight.setPosition(vposR);
-
-        if (gamepad2.right_trigger > 0.7)
+        if (isClamping && System.currentTimeMillis() - clampTime > 0) {
+            isClamping = false;
+            vposR = 0.73f;
             fpos = 0.5f;
-        else if (gamepad2.right_bumper)
+            vbarRight.setPosition(vposR);
+        }
+
+        if (isDropping && gamepad2.right_trigger > 0.7) { // finger down
+            fpos = 0.5f;
+        }
+        else if (gamepad2.right_bumper) { // finger up
             fpos = 0.1f;
+            isDropping = false;
+        }
 
         finger.setPosition(fpos);
 

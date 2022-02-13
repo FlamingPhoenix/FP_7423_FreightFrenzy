@@ -90,7 +90,7 @@ public class TeleTest extends OpMode{
         int vbarRightServoPort = vbarRight.getPortNumber();
         PwmControl.PwmRange vbarRightPwmRange = new PwmControl.PwmRange(600, 2400);
         vbarRightController.setServoPwmRange(vbarRightServoPort, vbarRightPwmRange);
-//        vbarRight.setPosition(0.58f);
+        vbarRight.setPosition(0.58f);
 
         finger = hardwareMap.servo.get("finger");
         ServoControllerEx fingerController = (ServoControllerEx) finger.getController();
@@ -135,12 +135,12 @@ public class TeleTest extends OpMode{
             fpos += 0.0005f;
         }
 
-        finger.setPosition(fpos);
+//        finger.setPosition(fpos);
 
-        //vbarLeft.setPosition(vposL);
+        vbarRight.setPosition(fpos);
 
         Log.i("[pheonix:servoInfo]", String.format("vbar right pos = %f", vbarRight.getPosition()));
-        telemetry.addData("finger position: ", finger.getPosition());
+        telemetry.addData("vbarRight position: ", vbarRight.getPosition());
         telemetry.update();
     }
 }

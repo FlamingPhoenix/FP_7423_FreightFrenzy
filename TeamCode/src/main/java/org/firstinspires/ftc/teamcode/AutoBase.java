@@ -68,7 +68,6 @@ public class AutoBase extends LinearOpMode {
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        fr.setDirection(DcMotorSimple.Direction.REVERSE); //for the actual robot
         pulley2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         imu = new MyIMU(hardwareMap);
