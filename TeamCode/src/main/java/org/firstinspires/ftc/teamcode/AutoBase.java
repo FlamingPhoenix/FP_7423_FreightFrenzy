@@ -14,13 +14,22 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class AutoBase extends LinearOpMode {
 
-    public DcMotor fl;
-    public DcMotor fr;
-    public DcMotor bl;
-    public DcMotor br;
-    public DcMotor carousel;
-    public DcMotor pulley, pulley2;
-    public DcMotor sweeper;
+    DcMotor fr;
+    DcMotor fl;
+    DcMotor br;
+    DcMotor bl;
+    DcMotor carousel;
+    DcMotor pulley, pulley2;
+    DcMotor sweeper;
+
+    Servo intakeLeft, intakeRight; //intakeLeft is not used because one servo is enough
+    Servo vbarLeft, vbarRight;
+    Servo finger;
+
+    float pos = 0.5f;
+    float vposR = 0.58f;
+    float vposL = 0.7f;
+    float fpos = 0.5f;
 
     public Servo pivotLeft;
     public Servo pivotRight;
@@ -40,35 +49,52 @@ public class AutoBase extends LinearOpMode {
     public int currentStage, currentPosition;
 
     public void initialize (){
-        fl = hardwareMap.dcMotor.get("frontleft");
         fr = hardwareMap.dcMotor.get("frontright");
-        bl = hardwareMap.dcMotor.get("backleft");
+        fl = hardwareMap.dcMotor.get("frontleft");
         br = hardwareMap.dcMotor.get("backright");
-        carousel = hardwareMap.dcMotor.get("carousel");
+        bl = hardwareMap.dcMotor.get("backleft");
         pulley = hardwareMap.dcMotor.get("pulley");
         pulley2 = hardwareMap.dcMotor.get("pulley2");
         sweeper = hardwareMap.dcMotor.get("sweeper");
 
+        intakeRight = hardwareMap.servo.get("intakeright");
+        ServoControllerEx intakeRightController = (ServoControllerEx) intakeRight.getController();
+        int intakeRightServoPort = intakeRight.getPortNumber();
+        PwmControl.PwmRange intakeRightPwmRange = new PwmControl.PwmRange(600, 2400);
+        intakeRightController.setServoPwmRange(intakeRightServoPort, intakeRightPwmRange);
+        intakeRight.setPosition(0.7f); //starting position
 
-//        pivotLeft = hardwareMap.servo.get("pivotleft");
-//        ServoControllerEx pivotLeftController = (ServoControllerEx) pivotLeft.getController();
-//        int pivotLeftServoPort = pivotLeft.getPortNumber();
-//        PwmControl.PwmRange pivotLeftPwmRange = new PwmControl.PwmRange(899, 2105);
-//        pivotLeftController.setServoPwmRange(pivotLeftServoPort, pivotLeftPwmRange);
-//        pivotLeft.setPosition(1); //starting position
-//
-//        pivotRight = hardwareMap.servo.get("pivotright");
-//        ServoControllerEx pivotRightController = (ServoControllerEx) pivotRight.getController();
-//        int pivotRightServoPort = pivotRight.getPortNumber();
-//        PwmControl.PwmRange pivotRightPwmRange = new PwmControl.PwmRange(899, 2105);
-//        pivotRightController.setServoPwmRange(pivotRightServoPort, pivotRightPwmRange);
-//        pivotRight.setPosition(0); //starting position
+        vbarLeft = hardwareMap.servo.get("vbarleft");
+        ServoControllerEx vbarLeftController = (ServoControllerEx) vbarLeft.getController();
+        int vbarLeftServoPort = vbarLeft.getPortNumber();
+        PwmControl.PwmRange vbarLeftPwmRange = new PwmControl.PwmRange(600, 2400);
+        vbarLeftController.setServoPwmRange(vbarLeftServoPort, vbarLeftPwmRange);
 
+        vbarRight = hardwareMap.servo.get("vbarright");
+        ServoControllerEx vbarRightController = (ServoControllerEx) vbarRight.getController();
+        int vbarRightServoPort = vbarRight.getPortNumber();
+        PwmControl.PwmRange vbarRightPwmRange = new PwmControl.PwmRange(600, 2400);
+        vbarRightController.setServoPwmRange(vbarRightServoPort, vbarRightPwmRange);
+        vbarRight.setPosition(vposR);
 
-        fl.setDirection(DcMotorSimple.Direction.REVERSE);
+        finger = hardwareMap.servo.get("finger");
+        ServoControllerEx fingerController = (ServoControllerEx) finger.getController();
+        int fingerServoPort = finger.getPortNumber();
+        PwmControl.PwmRange fingerPwmRange = new PwmControl.PwmRange(600, 2400);
+        fingerController.setServoPwmRange(fingerServoPort, fingerPwmRange);
+        finger.setPosition(fpos);
+
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
+        fl.setDirection(DcMotorSimple.Direction.REVERSE);
 
         pulley2.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        carousel = hardwareMap.dcMotor.get("carousel");
+
+        pulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        pulley2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        pulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        pulley2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         imu = new MyIMU(hardwareMap);
         BNO055IMU.Parameters p = new BNO055IMU.Parameters();
@@ -79,8 +105,8 @@ public class AutoBase extends LinearOpMode {
 
         startHeading = imu.getAdjustedAngle();
 
-        pulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        telemetry.addData("Ready for start %f", 0);
+        telemetry.update();
     }
 
     public void StopAll() {
@@ -95,12 +121,12 @@ public class AutoBase extends LinearOpMode {
 
         int targetEncoderValue = Math.round(x);
 
-        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int currentPosition = 0;
 
         while (currentPosition < targetEncoderValue && opModeIsActive()) {
-            currentPosition = Math.abs(bl.getCurrentPosition());
+            currentPosition = Math.abs(br.getCurrentPosition());
             if (d == Direction.FORWARD) {
                 fl.setPower(power);
                 fr.setPower(power);
@@ -177,13 +203,13 @@ public class AutoBase extends LinearOpMode {
 
         int targetEncoderValue = Math.round(x);
 
-        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int currentPosition = 0;
 
         if (d == Direction.LEFT) {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
-                currentPosition = Math.abs(bl.getCurrentPosition());
+                currentPosition = Math.abs(br.getCurrentPosition());
                 fl.setPower(-power);
                 fr.setPower(power);
                 bl.setPower(power);
@@ -191,7 +217,7 @@ public class AutoBase extends LinearOpMode {
             }
         } else {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
-                currentPosition = Math.abs(bl.getCurrentPosition());
+                currentPosition = Math.abs(br.getCurrentPosition());
                 fl.setPower(power);
                 fr.setPower(-power);
                 bl.setPower(-power);
@@ -233,8 +259,8 @@ public class AutoBase extends LinearOpMode {
         Log.i("[phoenix:startValues]", String.format("Heading: %f; Target Encoder: %d", heading, targetEncoderValue));
 
 
-        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int currentPosition = 0;
 
         while (currentPosition < targetEncoderValue && opModeIsActive()) {
@@ -269,7 +295,7 @@ public class AutoBase extends LinearOpMode {
             if (turnDirection == Direction.BACKWARD)
                 adjustmentPower = adjustmentPower * -1;
 
-            currentPosition = Math.abs(bl.getCurrentPosition());
+            currentPosition = Math.abs(br.getCurrentPosition());
 
             float frontRight = power;
             float frontLeft = power;
@@ -461,13 +487,13 @@ public class AutoBase extends LinearOpMode {
 
         float flp, frp, blp, brp;
 
-        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int currentPosition = 0;
 
         if (d == Direction.LEFT) {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
-                currentPosition = Math.abs(bl.getCurrentPosition());
+                currentPosition = Math.abs(br.getCurrentPosition());
                 float currentHeading = imu.getAdjustedAngle();
                 float angleDiff = Math.abs(currentPosition-heading);
                 if (angleDiff > 20) {
@@ -504,7 +530,7 @@ public class AutoBase extends LinearOpMode {
             }
         } else {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
-                currentPosition = Math.abs(bl.getCurrentPosition());
+                currentPosition = Math.abs(br.getCurrentPosition());
                 float currentHeading = imu.getAdjustedAngle();
 
                 flp = power;
@@ -581,6 +607,22 @@ public class AutoBase extends LinearOpMode {
         pulley.setPower(backgroundPower);
         pulley2.setPower(backgroundPower);
 
+    }
+
+    public void OnStart() {
+        Drive(0.5f, 6, Direction.BACKWARD);
+
+        finger.setPosition(0.3f);
+        vbarRight.setPosition(0.69f);
+        while (pulley.getCurrentPosition() < 50) {
+            pulley.setPower(0.5f);
+        }
+        intakeRight.setPosition(0.7f);
+        while (pulley.getCurrentPosition() > 0) {
+            pulley.setPower(-0.5f);
+        }
+        pulley.setPower(0);
+        vbarRight.setPosition(0.8f);
     }
 
     @Override

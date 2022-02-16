@@ -27,11 +27,12 @@ public class Tele extends OpMode{
     Servo finger;
 
     float x1, x2, y1, y2, tr, tl, tr2;
+    float maxPower = 0.8f;
 
     int currentPosition, currentStage;
     int stage;
     float intakePos = 0.7f;
-    float vposR = 0.8f; // 0.785 to pick up freight; 0.69 to pull out; 0.2 to drop freight; 0.8 initialize
+    float vposR = 0.8f; // 0.785 or 0.8 to pick up freight; 0.69 to pull out; 0.2 to drop freight; 0.8 initialize
     float fpos = 0.2f;
     public static int autoCurrentPosition, autoCurrentStage;
     int targetEncoderValue = 0;
@@ -62,10 +63,10 @@ public class Tele extends OpMode{
         backLeft = Range.clip(backLeft, -1, 1);
         backRight = Range.clip(backRight, -1, 1);
 
-        fl.setPower(frontLeft);
-        fr.setPower(frontRight);
-        bl.setPower(backLeft);
-        br.setPower(backRight);
+        fl.setPower(frontLeft * maxPower);
+        fr.setPower(frontRight * maxPower);
+        bl.setPower(backLeft * maxPower);
+        br.setPower(backRight * maxPower);
     }
 
     @Override
@@ -143,12 +144,17 @@ public class Tele extends OpMode{
             stage = 0; // lower shipping hub
         }
 
+        if (currentStage == 1 || currentStage == 2)
+            maxPower = 0.25f;
+        else
+            maxPower = 0.8f;
+
         if (currentStage > stage) {
             if (currentPosition + Globals.pulleyEncoder > targetEncoderValue) {
                 if (!isDropping && !isReturning) {
                     isReturning = true;
                     returningTime = System.currentTimeMillis() + 1000;
-                    vposR = 0.73f;
+                    vposR = 0.72f;
                     fpos = 0.5f;
                     vbarRight.setPosition(vposR);
                     finger.setPosition(fpos);
@@ -170,7 +176,7 @@ public class Tele extends OpMode{
         } else if (currentStage < stage) {
             if (currentPosition + Globals.pulleyEncoder < targetEncoderValue) {
                 if (!isDropping) {
-                    vposR = 0.73f;
+                    vposR = 0.72f;
                     vbarRight.setPosition(vposR);
                 }
                 currentPosition = pulley.getCurrentPosition();
@@ -194,7 +200,7 @@ public class Tele extends OpMode{
         } else {
             pulley.setPower(0);
             pulley2.setPower(0);
-            vposR = 0.785f;
+            vposR = 0.8f;
             vbarRight.setPosition(vposR);
         }
 
@@ -237,7 +243,7 @@ public class Tele extends OpMode{
             intakeTime = System.currentTimeMillis() + 2000;
             intakePos = 0.4f;
             fpos = 0.1f;
-            sweeper.setPower(1);
+            sweeper.setPower(0.8);
             isTransferring = true;
         }
         else if (gamepad1.a)
@@ -248,17 +254,17 @@ public class Tele extends OpMode{
         Log.i("[phoenix:servoInfo]", String.format("currentServo = %f", intakeRight.getPosition()));
 
         if (gamepad1.right_trigger > 0.7)
-            sweeper.setPower(1);
+            sweeper.setPower(0.8);
         else if (gamepad1.right_trigger > 0.1)
-            sweeper.setPower(gamepad1.right_trigger);
+            sweeper.setPower(gamepad1.right_trigger * 0.8);
         else if (gamepad1.right_bumper)
-            sweeper.setPower(-1);
+            sweeper.setPower(-0.8);
         else if (!isTransferring)
             sweeper.setPower(0);
 
         if (isClamping && System.currentTimeMillis() - clampTime > 0) {
             isClamping = false;
-            vposR = 0.73f;
+            vposR = 0.72f;
             fpos = 0.5f;
             vbarRight.setPosition(vposR);
         }
@@ -270,6 +276,11 @@ public class Tele extends OpMode{
             fpos = 0.1f;
             isDropping = false;
         }
+
+        if(gamepad2.left_trigger > 0.4 && stage != 0)
+            fpos = 0.5f;
+        else if(gamepad2.left_bumper && stage != 0)
+            fpos = 0.1f;
 
         finger.setPosition(fpos);
 

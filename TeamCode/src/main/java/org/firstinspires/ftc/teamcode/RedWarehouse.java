@@ -10,18 +10,14 @@ public class RedWarehouse extends AutoBase {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Log.i("[phoenix:InitgetAdjustedAngle]", "Initialize");
+        Log.i("[phoenix:init]", "Initialize");
         initialize();
-        Log.i("[phoenix:InitgetAdjustedAngle]", "After Initialize");
+        Log.i("[phoenix:afterInit]", "After Initialize");
         waitForStart();
-        Log.i("[phoenix:InitgetAdjustedAngle]", "Started");
-
-        Log.i("[phoenix:InitgetAdjustedAngle]", String.format("getAdjustedAngle: %f", imu.getAdjustedAngle()));
-
+        Log.i("[phoenix:started]", "Started");
+        OnStart();
 
         int duckPos = 2;
-
-        waitForStart();
 
         long startTime = System.currentTimeMillis();
 
@@ -46,7 +42,7 @@ public class RedWarehouse extends AutoBase {
 
         Turn(0.5f, 90, Direction.COUNTERCLOCKWISE, imu);
         sleep(1000);
-        Log.i("[phoenix:getAdjustedAngle]", String.format("getAdjustedAngle: %f", imu.getAdjustedAngle()));
+        Log.i("[phoenix:getAdAngle]", String.format("getAdjustedAngle: %f", imu.getAdjustedAngle()));
         StrafeUntilHeading(0.6f, 0.5f, startHeading + 90, 20, Direction.RIGHT);
         Log.i("[phoenix:passed]", String.format("getAdjustedAngle: %f", imu.getAdjustedAngle()));
         Strafe(0.5f, 5, Direction.LEFT);
