@@ -29,7 +29,7 @@ public class AutoBase extends LinearOpMode {
     float pos = 0.5f;
     float vposR = 0.58f;
     float vposL = 0.7f;
-    float fpos = 0.5f;
+    float fpos = 0.2f;
 
     public Servo pivotLeft;
     public Servo pivotRight;
@@ -121,12 +121,12 @@ public class AutoBase extends LinearOpMode {
 
         int targetEncoderValue = Math.round(x);
 
-        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int currentPosition = 0;
 
         while (currentPosition < targetEncoderValue && opModeIsActive()) {
-            currentPosition = Math.abs(br.getCurrentPosition());
+            currentPosition = Math.abs(bl.getCurrentPosition());
             if (d == Direction.FORWARD) {
                 fl.setPower(power);
                 fr.setPower(power);
@@ -203,13 +203,13 @@ public class AutoBase extends LinearOpMode {
 
         int targetEncoderValue = Math.round(x);
 
-        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int currentPosition = 0;
 
         if (d == Direction.LEFT) {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
-                currentPosition = Math.abs(br.getCurrentPosition());
+                currentPosition = Math.abs(bl.getCurrentPosition());
                 fl.setPower(-power);
                 fr.setPower(power);
                 bl.setPower(power);
@@ -217,7 +217,7 @@ public class AutoBase extends LinearOpMode {
             }
         } else {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
-                currentPosition = Math.abs(br.getCurrentPosition());
+                currentPosition = Math.abs(bl.getCurrentPosition());
                 fl.setPower(power);
                 fr.setPower(-power);
                 bl.setPower(-power);
@@ -259,8 +259,8 @@ public class AutoBase extends LinearOpMode {
         Log.i("[phoenix:startValues]", String.format("Heading: %f; Target Encoder: %d", heading, targetEncoderValue));
 
 
-        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int currentPosition = 0;
 
         while (currentPosition < targetEncoderValue && opModeIsActive()) {
@@ -295,7 +295,7 @@ public class AutoBase extends LinearOpMode {
             if (turnDirection == Direction.BACKWARD)
                 adjustmentPower = adjustmentPower * -1;
 
-            currentPosition = Math.abs(br.getCurrentPosition());
+            currentPosition = Math.abs(bl.getCurrentPosition());
 
             float frontRight = power;
             float frontLeft = power;
@@ -487,13 +487,13 @@ public class AutoBase extends LinearOpMode {
 
         float flp, frp, blp, brp;
 
-        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int currentPosition = 0;
 
         if (d == Direction.LEFT) {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
-                currentPosition = Math.abs(br.getCurrentPosition());
+                currentPosition = Math.abs(bl.getCurrentPosition());
                 float currentHeading = imu.getAdjustedAngle();
                 float angleDiff = Math.abs(currentPosition-heading);
                 if (angleDiff > 20) {
@@ -530,7 +530,7 @@ public class AutoBase extends LinearOpMode {
             }
         } else {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
-                currentPosition = Math.abs(br.getCurrentPosition());
+                currentPosition = Math.abs(bl.getCurrentPosition());
                 float currentHeading = imu.getAdjustedAngle();
 
                 flp = power;

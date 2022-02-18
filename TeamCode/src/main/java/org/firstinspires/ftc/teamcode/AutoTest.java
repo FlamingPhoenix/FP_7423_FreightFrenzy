@@ -10,11 +10,17 @@ public class AutoTest extends AutoBase {
         initialize();
         waitForStart();
 
+        Drive(0.6f, 12, Direction.FORWARD);
+
+        sleep(200);
+
+        Drive(0.6f, 12, Direction.BACKWARD);
+
+
 
 
         //MovePulley(0.5f, 1);
 
-        sleep(30000);
 
 //        Turn(1, 180, Direction.CLOCKWISE, imu);
 

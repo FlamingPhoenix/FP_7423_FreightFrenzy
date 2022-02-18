@@ -31,9 +31,9 @@ public class TeleTest extends OpMode{
     int currentPosition, currentStage;
     int stage;
     float pos = 0.5f;
-    float vposR = 0.58f;
-    float vposL = 0.7f;
-    float fpos = 0.5f;
+    float vpos = 0.58f;
+    float fpos = 0.8f;
+    float ppos = 0;
 
     public static int autoCurrentPosition, autoCurrentStage;
 
@@ -128,19 +128,30 @@ public class TeleTest extends OpMode{
         tl = gamepad1.left_trigger;
         tr2 = gamepad2.right_trigger;
 
-        if (gamepad2.dpad_left) {
+        if (gamepad2.a) {
             fpos -= 0.0005f;
         }
         else if (gamepad2.b) {
             fpos += 0.0005f;
         }
 
-//        finger.setPosition(fpos);
+        if (gamepad2.dpad_left) {
+            pulley.setPower(-0.2);
+            pulley2.setPower(-0.2);
+        }
+        else if (gamepad2.dpad_right) {
+            pulley.setPower(0.2);
+            pulley2.setPower(0.2);
+        }
+        else {
+            pulley.setPower(0);
+            pulley2.setPower(0);
+        }
 
         vbarRight.setPosition(fpos);
 
-        Log.i("[pheonix:servoInfo]", String.format("vbar right pos = %f", vbarRight.getPosition()));
         telemetry.addData("vbarRight position: ", vbarRight.getPosition());
+        telemetry.addData("pulley pos: ", pulley.getCurrentPosition());
         telemetry.update();
     }
 }

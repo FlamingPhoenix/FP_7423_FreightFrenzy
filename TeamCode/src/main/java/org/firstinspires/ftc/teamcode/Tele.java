@@ -155,7 +155,7 @@ public class Tele extends OpMode{
                     isReturning = true;
                     returningTime = System.currentTimeMillis() + 1000;
                     vposR = 0.72f;
-                    fpos = 0.5f;
+                    fpos = 0.2f; // neutral position
                     vbarRight.setPosition(vposR);
                     finger.setPosition(fpos);
                 } else if (isReturning && System.currentTimeMillis() - returningTime >= 0) {
@@ -217,8 +217,8 @@ public class Tele extends OpMode{
         }
 
         if (gamepad1.left_trigger > 0.1) {
-            carousel.setPower(-gamepad2.right_trigger);
-            telemetry.addData("Carousel Power: %f", -gamepad2.right_trigger);
+            carousel.setPower(-gamepad2.left_trigger);
+            telemetry.addData("Carousel Power: %f", -gamepad2.left_trigger);
             telemetry.update();
         } else if (gamepad2.left_bumper) {
             carousel.setPower(0.5);
