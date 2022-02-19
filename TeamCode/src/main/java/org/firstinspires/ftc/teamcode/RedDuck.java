@@ -20,17 +20,34 @@ public class RedDuck extends AutoBase {
             telemetry.update();
             sleep(10);
         }
-        Drive(0.3f, 12, Direction.BACKWARD);
+        OnStart();
+
+        Turn(0.5f, 120, Direction.COUNTERCLOCKWISE, imu);
+
+        MovePulley(0.9f, duckPos);
+
+        sleep(750);
+
+        finger.setPosition(0.1);
+
+        sleep(750);
+
+        finger.setPosition(0.3);
+        MovePulley(0.7f, 0);
+
         sleep(100);
-        MovePulley(0.5f, 1);//stage tbd with ducky
+
+        vbarRight.setPosition(0.75);
+
+
+
         //place freight
-        Turn(0.25f, 90, Direction.COUNTERCLOCKWISE, imu);
-        DriveHeading(0.25f, 35, startHeading + 135, 0.3f, Direction.BACKWARD);
+        DriveHeading(0.25f, 20, startHeading + 115, 0.3f, Direction.BACKWARD);
         //spin ducky amd score
-        Carousel(0.4f);
-        Turn(0.25f, 80, Direction.COUNTERCLOCKWISE, imu);
-        DriveHeading(0.25f, 54,  startHeading + 155, 0.3f, Direction.FORWARD);
-        StrafeUntilHeading(0.5f, 2, startHeading + 180, 10, Direction.LEFT);
+        Carousel(0.8f);
+        Turn(0.5f, 80, Direction.COUNTERCLOCKWISE, imu);
+        DriveHeading(0.25f, 28.5f,  startHeading - 175, 0.3f, Direction.FORWARD);
+        StrafeUntilHeading(0.5f, 2, startHeading + 180, 4, Direction.LEFT);
 
         //copyToTele();
     }

@@ -155,7 +155,7 @@ public class Tele extends OpMode{
                     isReturning = true;
                     returningTime = System.currentTimeMillis() + 1000;
                     vposR = 0.72f;
-                    fpos = 0.2f; // neutral position
+                    fpos = 0.4f; // neutral position
                     vbarRight.setPosition(vposR);
                     finger.setPosition(fpos);
                 } else if (isReturning && System.currentTimeMillis() - returningTime >= 0) {
@@ -176,7 +176,7 @@ public class Tele extends OpMode{
         } else if (currentStage < stage) {
             if (currentPosition + Globals.pulleyEncoder < targetEncoderValue) {
                 if (!isDropping) {
-                    vposR = 0.72f;
+                    vposR = 0.69f;
                     vbarRight.setPosition(vposR);
                 }
                 currentPosition = pulley.getCurrentPosition();
@@ -184,7 +184,7 @@ public class Tele extends OpMode{
                 pulley2.setPower(1);
                 Log.i("[phoenix:pulleyInfo]", String.format("currentPulley = %d;  targetEncode=%d",  currentPosition, targetEncoderValue));
 
-                if (currentStage == 0 && currentPosition + Globals.pulleyEncoder >= 180) {
+                if (currentPosition + Globals.pulleyEncoder >= 180) {
                     vposR = 0.2f;
                     isDropping = true;
                     vbarRight.setPosition(vposR);
@@ -217,10 +217,10 @@ public class Tele extends OpMode{
         }
 
         if (gamepad1.left_trigger > 0.1) {
-            carousel.setPower(-gamepad2.left_trigger);
-            telemetry.addData("Carousel Power: %f", -gamepad2.left_trigger);
+            carousel.setPower(-gamepad1.left_trigger);
+            telemetry.addData("Carousel Power: %f", -gamepad1.left_trigger);
             telemetry.update();
-        } else if (gamepad2.left_bumper) {
+        } else if (gamepad1.left_bumper) {
             carousel.setPower(0.5);
         } else {
             carousel.setPower(0);
@@ -264,7 +264,7 @@ public class Tele extends OpMode{
 
         if (isClamping && System.currentTimeMillis() - clampTime > 0) {
             isClamping = false;
-            vposR = 0.72f;
+            vposR = 0.72f; //keep in mind to maybe lower with continued issues
             fpos = 0.5f;
             vbarRight.setPosition(vposR);
         }
@@ -277,9 +277,9 @@ public class Tele extends OpMode{
             isDropping = false;
         }
 
-        if(gamepad2.left_trigger > 0.4 && stage != 0)
+        if(gamepad2.left_trigger > 0.4)
             fpos = 0.5f;
-        else if(gamepad2.left_bumper && stage != 0)
+        else if(gamepad2.left_bumper)
             fpos = 0.1f;
 
         finger.setPosition(fpos);
@@ -287,6 +287,10 @@ public class Tele extends OpMode{
         Log.i("[phoenix:servoInfo]", String.format("vbar right pos = %f", vbarRight.getPosition()));
 
         telemetry.addData("v bar right position: ", vbarRight.getPosition());
+        telemetry.addData("pulley position ", pulley.getCurrentPosition());
+        telemetry.addData("global encoder: ", Globals.pulleyEncoder);
         telemetry.update();
+        Log.i("[phoenix:encoder]", String.format("vbar right pos = %d", Globals.pulleyEncoder));
+
     }
 }

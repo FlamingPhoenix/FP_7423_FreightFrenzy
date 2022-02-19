@@ -128,25 +128,41 @@ public class TeleTest extends OpMode{
         tl = gamepad1.left_trigger;
         tr2 = gamepad2.right_trigger;
 
-        if (gamepad2.a) {
-            fpos -= 0.0005f;
-        }
-        else if (gamepad2.b) {
-            fpos += 0.0005f;
+//        if (gamepad2.a) {
+//            fpos -= 0.0005f;
+//        }
+//        else if (gamepad2.b) {
+//            fpos += 0.0005f;
+//        }
+//
+//        if (gamepad2.dpad_left) {
+//            pulley.setPower(-0.2);
+//            pulley2.setPower(-0.2);
+//        }
+//        else if (gamepad2.dpad_right) {
+//            pulley.setPower(0.2);
+//            pulley2.setPower(0.2);
+//        }
+//        else {
+//            pulley.setPower(0);
+//            pulley2.setPower(0);
+//        }
+
+        if(gamepad1.dpad_up)
+            fr.setPower(0.2);
+        else if(gamepad1.dpad_left)
+            fl.setPower(0.2);
+        else if(gamepad1.dpad_right)
+            br.setPower(0.2);
+        else if (gamepad1.dpad_down)
+            bl.setPower(0.2);
+        else {
+            fr.setPower(0);
+            fl.setPower(0);
+            br.setPower(0);
+            bl.setPower(0);
         }
 
-        if (gamepad2.dpad_left) {
-            pulley.setPower(-0.2);
-            pulley2.setPower(-0.2);
-        }
-        else if (gamepad2.dpad_right) {
-            pulley.setPower(0.2);
-            pulley2.setPower(0.2);
-        }
-        else {
-            pulley.setPower(0);
-            pulley2.setPower(0);
-        }
 
         vbarRight.setPosition(fpos);
 

@@ -27,7 +27,7 @@ public class AutoBase extends LinearOpMode {
     Servo finger;
 
     float pos = 0.5f;
-    float vposR = 0.58f;
+    float vposR = 0.69f;
     float vposL = 0.7f;
     float fpos = 0.2f;
 
@@ -62,7 +62,7 @@ public class AutoBase extends LinearOpMode {
         int intakeRightServoPort = intakeRight.getPortNumber();
         PwmControl.PwmRange intakeRightPwmRange = new PwmControl.PwmRange(600, 2400);
         intakeRightController.setServoPwmRange(intakeRightServoPort, intakeRightPwmRange);
-        intakeRight.setPosition(0.7f); //starting position
+        intakeRight.setPosition(0); //starting position
 
         vbarLeft = hardwareMap.servo.get("vbarleft");
         ServoControllerEx vbarLeftController = (ServoControllerEx) vbarLeft.getController();
@@ -347,7 +347,7 @@ public class AutoBase extends LinearOpMode {
         float x = (PPR * 3.25f)/(diameter * (float)Math.PI);
 
         int targetEncoderValue = Math.round(x);
-        int targetTime = 3000;
+        int targetTime = 3500;
 
         carousel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         carousel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -355,6 +355,11 @@ public class AutoBase extends LinearOpMode {
         int currentTime = 0;
 
         carousel.setPower(-power);
+        fr.setPower(-0.1);
+        fl.setPower(-0.1);
+        br.setPower(-0.1);
+        bl.setPower(-0.1);
+
         sleep(targetTime);
 //        while (currentPosition < targetEncoderValue && opModeIsActive()) {
 //            currentPosition = Math.abs(carousel.getCurrentPosition());
@@ -570,13 +575,16 @@ public class AutoBase extends LinearOpMode {
         if (stage == 1) {
             targetEncoderValue = 200;
         } else if (stage == 2) {
-            targetEncoderValue = 420;
+            targetEncoderValue = 340;
         }
 
         pulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         if (currentStage > stage) {
             while (currentPosition > targetEncoderValue && opModeIsActive()) {
+                vposR = 0.71f;
+                vbarRight.setPosition(vposR);
+                sleep(1000);
                 currentPosition = pulley.getCurrentPosition();
                 Globals.pulleyEncoder = currentPosition;
                 pulley.setPower(-power);
@@ -591,6 +599,8 @@ public class AutoBase extends LinearOpMode {
                 pulley2.setPower(power);
                 Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
             }
+            vposR = 0.2f;
+            vbarRight.setPosition(vposR);
         }
 
         float backgroundPower = 0;
@@ -599,9 +609,9 @@ public class AutoBase extends LinearOpMode {
 
         // w/o lift attachment
         if (currentStage == 1) {
-            backgroundPower = 0.2f;
+            backgroundPower = 0.1f;
         } else if (currentStage == 2) {
-            backgroundPower = 0.2f;
+            backgroundPower = 0.1f;
         }
 
         pulley.setPower(backgroundPower);
@@ -613,16 +623,76 @@ public class AutoBase extends LinearOpMode {
         Drive(0.5f, 6, Direction.BACKWARD);
 
         finger.setPosition(0.3f);
-        vbarRight.setPosition(0.69f);
-        while (pulley.getCurrentPosition() < 50) {
-            pulley.setPower(0.5f);
-        }
-        intakeRight.setPosition(0.7f);
-        while (pulley.getCurrentPosition() > 0) {
-            pulley.setPower(-0.5f);
+        vbarRight.setPosition(0.78f);
+        while (pulley.getCurrentPosition() < 85) {
+            pulley.setPower(0.8f);
+            pulley2.setPower(0.8f);
         }
         pulley.setPower(0);
-        vbarRight.setPosition(0.8f);
+        pulley2.setPower(0);
+        intakeRight.setPosition(0.71f);
+        sweeper.setPower(0.7f);
+        sleep(1000);
+        while (pulley.getCurrentPosition() > 0) {
+            pulley.setPower(-0.5f);
+            pulley2.setPower(-0.5f);
+        }
+        pulley.setPower(0);
+        pulley2.setPower(0);
+        sweeper.setPower(0);
+        vbarRight.setPosition(0.78f);
+        sleep(100);
+        finger.setPosition(0.5);
+    }
+
+    public void Intake(float power){
+        double intakeTime;
+        double clampTime;
+
+        int targetTime = 3000;
+
+        sweeper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sweeper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        sweeper.setPower(power);
+//        fr.setPower(-0.1);
+//        fl.setPower(-0.1);
+//        br.setPower(-0.1);
+//        bl.setPower(-0.1);
+
+        Shake(0.7f, 10);
+
+//        sleep(targetTime);
+        sweeper.setPower(0);
+
+        DriveHeading(0.5f, 40, startHeading - 90, 0.3f, Direction.FORWARD);//can maybe seperate into two different functions here
+
+        intakeRight.setPosition(0.4);
+//        vbarRight.setPosition(0.69);
+        finger.setPosition(0.1);
+        sweeper.setPower(0.8);
+
+        sleep(2000);
+
+        sweeper.setPower(0);
+        intakeRight.setPosition(0.7);
+
+        sleep(1000);
+
+        vbarRight.setPosition(0.72);
+        finger.setPosition(0.5);
+    }
+    public void Shake(float power, int shakes){
+        int neg = 1;
+        for (int i = 0; i < shakes; i++){
+            fl.setPower(power * neg);
+            bl.setPower(power * neg);
+            fr.setPower(-power * neg);
+            br.setPower(-power * neg);
+
+            sleep(100);
+            neg *= -1;
+        }
     }
 
     @Override

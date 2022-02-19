@@ -10,12 +10,10 @@ public class AutoTest extends AutoBase {
         initialize();
         waitForStart();
 
-        Drive(0.6f, 12, Direction.FORWARD);
 
-        sleep(200);
+        Turn(0.5f, 125, Direction.COUNTERCLOCKWISE, imu);
 
-        Drive(0.6f, 12, Direction.BACKWARD);
-
+        DriveHeading(0.25f, 35, startHeading + 135, 0.3f, Direction.BACKWARD);
 
 
 
