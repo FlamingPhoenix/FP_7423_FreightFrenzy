@@ -22,15 +22,15 @@ public class RedDuck extends AutoBase {
         }
         OnStart();
 
-        Turn(0.5f, 120, Direction.COUNTERCLOCKWISE, imu);
+        Turn(0.5f, 115, Direction.COUNTERCLOCKWISE, imu);
 
         MovePulley(0.9f, duckPos);
 
-        sleep(750);
+        sleep(1000);
 
         finger.setPosition(0.1);
 
-        sleep(750);
+        sleep(1000);
 
         finger.setPosition(0.3);
         MovePulley(0.7f, 0);
@@ -39,10 +39,8 @@ public class RedDuck extends AutoBase {
 
         vbarRight.setPosition(0.75);
 
-
-
         //place freight
-        DriveHeading(0.25f, 20, startHeading + 115, 0.3f, Direction.BACKWARD);
+        DriveHeading(0.4f, 22, startHeading + 115, 0.3f, Direction.BACKWARD);
         //spin ducky amd score
         Carousel(0.8f);
         Turn(0.5f, 80, Direction.COUNTERCLOCKWISE, imu);

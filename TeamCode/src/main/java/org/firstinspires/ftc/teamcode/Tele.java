@@ -144,7 +144,7 @@ public class Tele extends OpMode{
             stage = 0; // lower shipping hub
         }
 
-        if (currentStage == 1 || currentStage == 2)
+        if (stage == 1 || stage == 2)
             maxPower = 0.25f;
         else
             maxPower = 0.8f;

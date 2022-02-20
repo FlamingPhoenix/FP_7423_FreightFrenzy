@@ -582,7 +582,7 @@ public class AutoBase extends LinearOpMode {
 
         if (currentStage > stage) {
             while (currentPosition > targetEncoderValue && opModeIsActive()) {
-                vposR = 0.71f;
+                vposR = 0.70f;
                 vbarRight.setPosition(vposR);
                 sleep(1000);
                 currentPosition = pulley.getCurrentPosition();
@@ -640,9 +640,9 @@ public class AutoBase extends LinearOpMode {
         pulley.setPower(0);
         pulley2.setPower(0);
         sweeper.setPower(0);
-        vbarRight.setPosition(0.78f);
+        vbarRight.setPosition(0.79f);
         sleep(100);
-        finger.setPosition(0.5);
+        finger.setPosition(0.60);
     }
 
     public void Intake(float power){
@@ -660,7 +660,7 @@ public class AutoBase extends LinearOpMode {
 //        br.setPower(-0.1);
 //        bl.setPower(-0.1);
 
-        Shake(0.7f, 10);
+        Shake(0.5f, 10);
 
 //        sleep(targetTime);
         sweeper.setPower(0);
