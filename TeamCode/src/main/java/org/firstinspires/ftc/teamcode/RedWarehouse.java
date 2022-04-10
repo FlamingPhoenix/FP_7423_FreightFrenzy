@@ -43,14 +43,17 @@ public class RedWarehouse extends AutoBase {
         vbarRight.setPosition(0.79);
 
         Turn(0.5f, 30, Direction.COUNTERCLOCKWISE, imu);
-        Strafe(0.6f, 12, Direction.LEFT);
+        Strafe(0.6f, 11, Direction.LEFT);
         Drive(0.8f, 40, Direction.BACKWARD);
 
-        Strafe(0.4f, 2.5f, Direction.RIGHT);
+        //Strafe(0.4f, 2.5f, Direction.RIGHT);
 
         Intake(0.8f);
         Strafe(0.5f, 5, Direction.RIGHT);
         Turn(0.5f, 45, Direction.CLOCKWISE, imu);
+
+        finger.setPosition(0.6f);
+        sleep(500);
 
         MovePulley(0.9f, duckPos);
         sleep(750);
@@ -62,10 +65,8 @@ public class RedWarehouse extends AutoBase {
         vbarRight.setPosition(0.79);
 
         Turn(0.5f, 30, Direction.COUNTERCLOCKWISE, imu);
-        Strafe(0.6f, 8, Direction.LEFT);
+        Strafe(0.6f, 10, Direction.LEFT);
         Drive(0.8f, 40, Direction.BACKWARD);
-
-
 
 //        Drive(0.5f, 12, Direction.BACKWARD);
 //        Turn(0.5f, 30, Direction.COUNTERCLOCKWISE, imu);

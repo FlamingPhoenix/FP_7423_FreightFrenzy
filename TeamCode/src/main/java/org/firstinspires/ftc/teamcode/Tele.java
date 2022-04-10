@@ -146,6 +146,8 @@ public class Tele extends OpMode{
 
         if (stage == 1 || stage == 2)
             maxPower = 0.25f;
+        else if (gamepad2.x)
+            maxPower = 1.0f;
         else
             maxPower = 0.8f;
 
@@ -240,8 +242,8 @@ public class Tele extends OpMode{
         if (gamepad1.y)
             intakePos = 0;
         else if (gamepad1.x && !isTransferring) {
-            intakeTime = System.currentTimeMillis() + 2000;
-            intakePos = 0.4f;
+            intakeTime = System.currentTimeMillis() + 1000;
+            intakePos = 0.5f;
             fpos = 0.1f;
             sweeper.setPower(0.8);
             isTransferring = true;

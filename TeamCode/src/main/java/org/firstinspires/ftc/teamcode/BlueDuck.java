@@ -39,14 +39,15 @@ public class BlueDuck extends AutoBase {
 
         vbarRight.setPosition(0.79);
 
+        Strafe(0.8f, 2, Direction.RIGHT);
+
         //place freight
-        DriveHeading(0.25f, 22, startHeading - 115, 0.3f, Direction.BACKWARD);
+        DriveHeading(0.25f, 23, startHeading - 130, 0.3f, Direction.BACKWARD);
         //spin ducky amd score
         Carousel(0.8f);
         Turn(0.5f, 80, Direction.CLOCKWISE, imu);
-        DriveHeading(0.25f, 28.5f,  startHeading + 175, 0.3f, Direction.FORWARD);
+        DriveHeading(0.25f, 18f,  startHeading + 175, 0.3f, Direction.FORWARD);
         StrafeUntilHeading(0.5f, 2, startHeading - 180, 4, Direction.RIGHT);
-
     }
 
 }

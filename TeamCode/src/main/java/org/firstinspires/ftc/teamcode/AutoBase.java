@@ -228,6 +228,41 @@ public class AutoBase extends LinearOpMode {
         StopAll();
     }
 
+    public void Strafe(float power, float distance, Direction d, float maxTime) {
+        float x = (PPR * (2 * distance))/(diameter * (float)Math.PI);
+
+        int targetEncoderValue = Math.round(x);
+
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        int currentPosition = 0;
+
+        maxTime += System.currentTimeMillis();
+        float currentTime = System.currentTimeMillis();
+
+        if (d == Direction.LEFT) {
+            while (currentPosition < targetEncoderValue && opModeIsActive() && maxTime - currentTime > 0) {
+                currentPosition = Math.abs(bl.getCurrentPosition());
+                fl.setPower(-power);
+                fr.setPower(power);
+                bl.setPower(power);
+                br.setPower(-power);
+                currentTime = System.currentTimeMillis();
+            }
+        } else {
+            while (currentPosition < targetEncoderValue && opModeIsActive() && maxTime - currentTime > 0) {
+                currentPosition = Math.abs(bl.getCurrentPosition());
+                fl.setPower(power);
+                fr.setPower(-power);
+                bl.setPower(-power);
+                br.setPower(power);
+                currentTime = System.currentTimeMillis();
+            }
+        }
+
+        StopAll();
+    }
+
     public float Max(float f1, float f2, float f3, float f4) {
         f1 = Math.abs(f1);
         f2 = Math.abs(f2);
@@ -582,9 +617,9 @@ public class AutoBase extends LinearOpMode {
 
         if (currentStage > stage) {
             while (currentPosition > targetEncoderValue && opModeIsActive()) {
-                vposR = 0.70f;
+                vposR = 0.75f;
                 vbarRight.setPosition(vposR);
-                sleep(1000);
+                sleep(1500);
                 currentPosition = pulley.getCurrentPosition();
                 Globals.pulleyEncoder = currentPosition;
                 pulley.setPower(-power);
@@ -620,7 +655,7 @@ public class AutoBase extends LinearOpMode {
     }
 
     public void OnStart() {
-        Drive(0.5f, 6, Direction.BACKWARD);
+        Drive(0.5f, 5, Direction.BACKWARD);
 
         finger.setPosition(0.3f);
         vbarRight.setPosition(0.78f);
@@ -640,7 +675,7 @@ public class AutoBase extends LinearOpMode {
         pulley.setPower(0);
         pulley2.setPower(0);
         sweeper.setPower(0);
-        vbarRight.setPosition(0.79f);
+        vbarRight.setPosition(0.8f);
         sleep(100);
         finger.setPosition(0.60);
     }
@@ -660,10 +695,13 @@ public class AutoBase extends LinearOpMode {
 //        br.setPower(-0.1);
 //        bl.setPower(-0.1);
 
-        Shake(0.5f, 10);
+        //Shake(0.5f, 10);
 
 //        sleep(targetTime);
+        sleep(1000);
         sweeper.setPower(0);
+
+        Strafe(0.5f, 1, Direction.LEFT);
 
         DriveHeading(0.5f, 40, startHeading - 90, 0.3f, Direction.FORWARD);//can maybe seperate into two different functions here
 
@@ -672,14 +710,14 @@ public class AutoBase extends LinearOpMode {
         finger.setPosition(0.1);
         sweeper.setPower(0.8);
 
-        sleep(2000);
+        sleep(1000);
 
         sweeper.setPower(0);
         intakeRight.setPosition(0.7);
 
         sleep(1000);
 
-        vbarRight.setPosition(0.72);
+        vbarRight.setPosition(0.79);
         finger.setPosition(0.5);
     }
     public void Shake(float power, int shakes){

@@ -40,13 +40,13 @@ public class BlueWarehouse extends AutoBase {
         finger.setPosition(0.3);
         MovePulley(0.7f, 0);
         sleep(100);
-        vbarRight.setPosition(0.75);
+        vbarRight.setPosition(0.79);
 
         Turn(0.5f, 30, Direction.CLOCKWISE, imu);
-        Strafe(0.6f, 12, Direction.RIGHT);
+        Strafe(0.6f, 11, Direction.RIGHT);
         Drive(0.8f, 40, Direction.BACKWARD);
 
-        Strafe(0.4f, 2.5f, Direction.LEFT);
+//        Strafe(0.4f, 2.5f, Direction.LEFT);
 
         Intake(0.8f);
         Strafe(0.5f, 5, Direction.LEFT);
@@ -59,11 +59,12 @@ public class BlueWarehouse extends AutoBase {
         finger.setPosition(0.3);
         MovePulley(0.7f, 0);
         sleep(100);
-        vbarRight.setPosition(0.75);
+        vbarRight.setPosition(0.79);
 
         Turn(0.5f, 30, Direction.CLOCKWISE, imu);
-        Strafe(0.6f, 8, Direction.RIGHT);
+        Strafe(0.6f, 10, Direction.RIGHT);
         Drive(0.8f, 40, Direction.BACKWARD);
+        Strafe(0.6f, 24, Direction.RIGHT);
     }
 
 

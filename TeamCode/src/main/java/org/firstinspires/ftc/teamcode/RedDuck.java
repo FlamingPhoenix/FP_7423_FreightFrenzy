@@ -39,15 +39,15 @@ public class RedDuck extends AutoBase {
 
         vbarRight.setPosition(0.75);
 
+        Strafe(0.8f, 2, Direction.LEFT);
+
         //place freight
-        DriveHeading(0.4f, 22, startHeading + 115, 0.3f, Direction.BACKWARD);
+        DriveHeading(0.4f, 23, startHeading + 115, 0.3f, Direction.BACKWARD);
         //spin ducky amd score
         Carousel(0.8f);
         Turn(0.5f, 80, Direction.COUNTERCLOCKWISE, imu);
-        DriveHeading(0.25f, 28.5f,  startHeading - 175, 0.3f, Direction.FORWARD);
+        DriveHeading(0.25f, 20.5f,  startHeading - 175, 0.3f, Direction.FORWARD);
         StrafeUntilHeading(0.5f, 2, startHeading + 180, 4, Direction.LEFT);
-
-        //copyToTele();
     }
 
 }
