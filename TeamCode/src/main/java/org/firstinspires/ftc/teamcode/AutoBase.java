@@ -6,6 +6,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
@@ -13,7 +14,6 @@ import com.qualcomm.robotcore.hardware.ServoControllerEx;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class AutoBase extends LinearOpMode {
-
     DcMotor fr;
     DcMotor fl;
     DcMotor br;
@@ -21,7 +21,7 @@ public class AutoBase extends LinearOpMode {
     DcMotor carousel;
     DcMotor pulley, pulley2;
     DcMotor sweeper;
-
+    DistanceSensor distanceSensor;
     Servo intakeLeft, intakeRight; //intakeLeft is not used because one servo is enough
     Servo vbarLeft, vbarRight;
     Servo finger;
@@ -694,7 +694,9 @@ public class AutoBase extends LinearOpMode {
             neg *= -1;
         }
     }
-
+    public void testInitialize(){
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
+    }
     @Override
     public void runOpMode() throws InterruptedException {
 
