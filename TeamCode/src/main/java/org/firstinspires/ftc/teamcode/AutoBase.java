@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
@@ -145,52 +146,6 @@ public class AutoBase extends LinearOpMode {
 
     }
 
-    
-    public void Drive (float distance, Direction d) {
-        //This is just PID code. I'm going to commit this code to a seperate branch so you can test it.
-        // I can't come cuz of APs but I can still do this.
-        //If it work pls merge with the master branch. It should slow down as it approaches the given position given that you tune the Kd value.
-        
-        //tune the program by starting with Kd at 0
-        //then increase Kd until the robot will approach the position slowly with little overshoot
-        
-        float Kp = 0.01;
-        float Ki = 0; //just trust these values; when I can come back to robotics after APs, I'll explain everything in depth and show how to tune these
-        
-        float Kd = 0; //tune this
-        
-        float reference = Math.round((PPR * distance)/(diameter * (float)Math.PI));
-        if (d == Direction.BACKWARD)
-            reference = -reference;
-        float integralSum = 0;
-        float lastError = 0;
-        
-        ElapsedTime timer = new ElapsedTime();
-
-        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        int currentPosition = 0;
-
-        while (currentPosition < reference && opModeIsActive()) {
-            currentPosition = Math.abs(bl.getCurrentPosition());
-            error = reference - currentPosition;
-            derivative = (error - lastError)/timer.seconds();//derivatives are instantanteous rates of change; this is a difference quotient - essentially just a slope formula
-            integralSum = integralSum + (error*timer.seconds());//integral through riemann sums - approximating area under the curve with a bunch of rectangles
-            out = (Kp*error)+(Ki*error)+(Kd*derivative);
-            
-            fl.setPower(out);
-            fr.setPower(out);
-            bl.setPower(out);
-            br.setPower(out);
-            
-            lastError = error;
-            
-            timer.reset();
-        }
-
-        StopAll();
-
-    }
     
     
     
@@ -787,6 +742,49 @@ public class AutoBase extends LinearOpMode {
     }
     @Override
     public void runOpMode() throws InterruptedException {
+
+    }
+
+    public void Drive (float distance, Direction d) {
+        //This is just PID code. I'm going to commit this code to a seperate branch so you can test it.
+        // I can't come cuz of APs but I can still do this.
+        //If it work pls merge with the master branch. It should slow down as it approaches the given position given that you tune the Kd value.
+
+        //tune the program by starting with Kd at 0
+        //then increase Kd until the robot will approach the position slowly with little overshoot
+
+        float Kp = 0.01f;
+        float Ki = 0; //just trust these values; when I can come back to robotics after APs, I'll explain everything in depth and show how to tune these
+
+        float Kd = 0; //tune this
+
+        float reference = Math.round((PPR * distance)/(diameter * (float)Math.PI));
+        if (d == Direction.BACKWARD)
+            reference = -reference;
+        double integralSum = 0;
+        float lastError = 0;
+        float out;
+
+        ElapsedTime timer = new ElapsedTime();
+
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        int currentPosition = 0;
+
+        while (currentPosition < reference && opModeIsActive()) {
+            currentPosition = Math.abs(bl.getCurrentPosition());
+            float error = reference - currentPosition;
+            double derivative = (error - lastError)/timer.seconds();//derivatives are instantanteous rates of change; this is a difference quotient - essentially just a slope formula
+            integralSum = integralSum + (error*timer.seconds());//integral through riemann sums - approximating area under the curve with a bunch of rectangles
+            out = (float)((Kp*error)+(Ki*error)+(Kd*derivative));
+
+            setMaxPower(out, out, out, out);
+            lastError = error;
+
+            timer.reset();
+        }
+
+        StopAll();
 
     }
 
