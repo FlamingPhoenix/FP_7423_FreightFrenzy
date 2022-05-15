@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class AutoBase extends LinearOpMode {
@@ -105,6 +106,7 @@ public class AutoBase extends LinearOpMode {
         imageNavigation.init();
 
         startHeading = imu.getAdjustedAngle();
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
 
         telemetry.addData("Ready for start %f", 0);
         telemetry.update();
@@ -499,6 +501,43 @@ public class AutoBase extends LinearOpMode {
         DriveHeading(power, distance, heading, 0.5f, Direction.BACKWARD);
     }
 
+    public void StrafeUntilDistance(float power, Direction d, int angle, float distance){
+        float flp, blp, frp, brp;
+
+        if (d == Direction.RIGHT) {
+            while (distanceSensor.getDistance(DistanceUnit.INCH) > distance) {
+                flp = power;
+                frp = -power;
+                blp = -power;
+                brp = power;
+
+                setMaxPower(flp, frp, blp, brp);
+
+                fr.setPower(frp);
+                fl.setPower(flp);
+                bl.setPower(blp);
+                br.setPower(brp);
+            }
+        }
+        StopAll();
+        if (d == Direction.LEFT) {
+            while (distanceSensor.getDistance(DistanceUnit.INCH) > distance) {
+                flp = -power;
+                frp = power;
+                blp = power;
+                brp = -power;
+
+                setMaxPower(flp, frp, blp, brp);
+
+                fr.setPower(frp);
+                fl.setPower(flp);
+                bl.setPower(blp);
+                br.setPower(brp);
+            }
+        }
+        StopAll();
+    }
+
     public void TurnUntilImage(float power, Direction d, int angle) {
 
         imu.reset(d);
@@ -753,8 +792,8 @@ public class AutoBase extends LinearOpMode {
         //tune the program by starting with Kd at 0
         //then increase Kd until the robot will approach the position slowly with little overshoot
 
-        float Kp = 0.01f;
-        float Ki = 0; //just trust these values; when I can come back to robotics after APs, I'll explain everything in depth and show how to tune these
+        float Kp = 0.1f;
+        float Ki = 0.01f; //just trust these values; when I can come back to robotics after APs, I'll explain everything in depth and show how to tune these
 
         float Kd = 0; //tune this
 
