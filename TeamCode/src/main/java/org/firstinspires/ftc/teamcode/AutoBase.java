@@ -734,10 +734,6 @@ public class AutoBase extends LinearOpMode {
         sweeper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         sweeper.setPower(power);
-//        fr.setPower(-0.1);
-//        fl.setPower(-0.1);
-//        br.setPower(-0.1);
-//        bl.setPower(-0.1);
 
         //Shake(0.5f, 10);
 
@@ -827,8 +823,4 @@ public class AutoBase extends LinearOpMode {
 
     }
 
-//    public void copyToTele() {
-//        Tele.autoCurrentPosition = currentPosition;
-//        Tele.autoCurrentStage = currentStage;
-//    }
 }
