@@ -803,6 +803,8 @@ public class AutoBase extends LinearOpMode {
         double integralSum = 0;
         float lastError = 0;
         float out;
+        float firstAngle = imu.getAdjustedAngle();
+        float adjustment = 1;//need to tune
 
         ElapsedTime timer = new ElapsedTime();
 
@@ -816,9 +818,18 @@ public class AutoBase extends LinearOpMode {
             double derivative = (error - lastError)/timer.seconds();//derivatives are instantanteous rates of change; this is a difference quotient - essentially just a slope formula
             integralSum = integralSum + (error*timer.seconds());//integral through riemann sums - approximating area under the curve with a bunch of rectangles
             out = (float)((Kp*error)+(Ki*error)+(Kd*derivative));
-
-            setMaxPower(out, out, out, out);
+            
+            if (Math.abs(imu.getAdjustedAngle() - firstAngle) > 3) { //error > 3 degrees
+                if ((imu.getAdjustedAngle() - firstAngle) < 0)
+                    setMaxPower(out, (out + adjustment), out, (out + adjustment));
+                else
+                    setMaxPower((out + adjustment), out, (out + adjustment), out);
+            } else
+                setMaxPower(out, out, out, out);
+            
             lastError = error;
+            
+            
 
             timer.reset();
         }
