@@ -781,15 +781,11 @@ public class AutoBase extends LinearOpMode {
     }
 
     public void Drive (float distance, Direction d) {
-        //This is just PID code. I'm going to commit this code to a seperate branch so you can test it.
-        // I can't come cuz of APs but I can still do this.
-        //If it work pls merge with the master branch. It should slow down as it approaches the given position given that you tune the Kd value.
-
         //tune the program by starting with Kd at 0
         //then increase Kd until the robot will approach the position slowly with little overshoot
 
         float Kp = 0.1f;
-        float Ki = 0.01f; //just trust these values; when I can come back to robotics after APs, I'll explain everything in depth and show how to tune these
+        float Ki = 0.01f;
 
         float Kd = 0; //tune this
 
