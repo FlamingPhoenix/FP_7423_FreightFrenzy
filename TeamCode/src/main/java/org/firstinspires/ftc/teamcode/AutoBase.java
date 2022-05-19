@@ -796,10 +796,10 @@ public class AutoBase extends LinearOpMode {
         float lastError = 0;
         float out;
         float firstAngle = imu.getAdjustedAngle();
+        float adjustmentAngle = imu.getAdjustedAngle();
+        float currentAngle = imu.getAdjustedAngle();
         float adjustment = 1;//need to tune
-
         ElapsedTime timer = new ElapsedTime();
-
         bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int currentPosition = 0;
@@ -811,11 +811,18 @@ public class AutoBase extends LinearOpMode {
             integralSum = integralSum + (error*timer.seconds());//integral through riemann sums - approximating area under the curve with a bunch of rectangles
             out = (float)((Kp*error)+(Ki*error)+(Kd*derivative));
             
-            if (Math.abs(imu.getAdjustedAngle() - firstAngle) > 3) { //error > 3 degrees
-                if ((imu.getAdjustedAngle() - firstAngle) < 0)
-                    setMaxPower(out, (out + adjustment), out, (out + adjustment));
-                else
+            if (Math.abs(firstAngle) >= 178) {//any number (1,179) works here
+                currentAngle = imu.getAdjustedAngle() - adjustmentAngle;
+                firstAngle = 0;
+            } else
+                currentAngle = imu.getAdjustedAngle();
+            
+            
+            if (Math.abs(currentAngle - firstAngle) > 1) { //error > 1 degree
+                if ((currentAngle - firstAngle) < 0)
                     setMaxPower((out + adjustment), out, (out + adjustment), out);
+                else
+                    setMaxPower(out, (out + adjustment), out, (out + adjustment));
             } else
                 setMaxPower(out, out, out, out);
             
