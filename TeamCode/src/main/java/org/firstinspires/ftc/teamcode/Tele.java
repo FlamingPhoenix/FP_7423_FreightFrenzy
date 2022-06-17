@@ -129,8 +129,12 @@ public class Tele extends OpMode{
     }
 
     @Override
-    public void loop() {
+    public void start() {
         rd.run();
+    }
+
+    @Override
+    public void loop() {
         x1 = gamepad1.left_stick_x;
         y1 = gamepad1.left_stick_y;
         x2 = gamepad1.right_stick_x;
@@ -297,7 +301,10 @@ public class Tele extends OpMode{
         telemetry.update();
         Log.i("[phoenix:encoder]", String.format("vbar right pos = %d", Globals.pulleyEncoder));
 
-        rd.stop();
+    }
 
+    @Override
+    public void stop() {
+        rd.stop();
     }
 }
