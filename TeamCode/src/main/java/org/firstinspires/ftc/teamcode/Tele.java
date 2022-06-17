@@ -51,6 +51,8 @@ public class Tele extends OpMode{
 
     float maxEncoderPulley = 420f; //448 is true max
 
+    RemoDrive rd = new RemoDrive(this);
+
     public void Drive(float x1, float y1, float x2) {
 
         float frontLeft = y1 + x1 + x2; //new wheel orientation
@@ -128,6 +130,7 @@ public class Tele extends OpMode{
 
     @Override
     public void loop() {
+        rd.run();
         x1 = gamepad1.left_stick_x;
         y1 = gamepad1.left_stick_y;
         x2 = gamepad1.right_stick_x;
@@ -293,6 +296,8 @@ public class Tele extends OpMode{
         telemetry.addData("global encoder: ", Globals.pulleyEncoder);
         telemetry.update();
         Log.i("[phoenix:encoder]", String.format("vbar right pos = %d", Globals.pulleyEncoder));
+
+        rd.stop();
 
     }
 }
