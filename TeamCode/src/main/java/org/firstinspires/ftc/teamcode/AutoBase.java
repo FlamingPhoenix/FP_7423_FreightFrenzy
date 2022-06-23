@@ -836,5 +836,43 @@ public class AutoBase extends LinearOpMode {//TODO change autobase and specific 
         StopAll();
 
     }
+    
+    public void velocityControl (float velocity, int totalTime) { //controls velocity of robot in inches/seconds
+        
+        float out = 0;
+        
+        float countsVelocity = Math.round((PPR * velocity)/(diameter * (float)Math.PI));
+
+        ElapsedTime timer = new ElapsedTime();
+
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        
+        int currentPosition = 0;
+        int lastPosition = 0;
+        
+        float adjustment = 0.1;
+
+        while (time < totalTime && opModeIsActive()) {
+            
+            currentPosition = Math.abs(bl.getCurrentPosition());
+                        
+            double derivative = (currentPosition - lastPosition)/timer.seconds();
+            
+            lastPosition = currentposition;
+            
+            if (derivative < countsVelocity)
+                out = out + adjustment;
+            
+            setMaxPower(out, out, out, out);
+            
+            time = time + timer.seconds();
+            
+            timer.reset();
+        }
+
+        StopAll();
+
+    }
 
 }
