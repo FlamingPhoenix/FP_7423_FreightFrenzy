@@ -797,7 +797,7 @@ public class AutoBase extends LinearOpMode {//TODO change autobase and specific 
         float out;
         float firstAngle = imu.getAdjustedAngle();
         float adjustmentAngle = imu.getAdjustedAngle();
-        float currentAngle = imu.getAdjustedAngle();
+        float currentAngle;
         float adjustment = 1;//need to tune
         ElapsedTime timer = new ElapsedTime();
         bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -848,10 +848,10 @@ public class AutoBase extends LinearOpMode {//TODO change autobase and specific 
         bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         
-        int currentPosition = 0;
+        int currentPosition;
         int lastPosition = 0;
         
-        float adjustment = 0.1;
+        float adjustment = 0.1f;
 
         while (time < totalTime && opModeIsActive()) {
             
@@ -859,7 +859,7 @@ public class AutoBase extends LinearOpMode {//TODO change autobase and specific 
                         
             double derivative = (currentPosition - lastPosition)/timer.seconds();
             
-            lastPosition = currentposition;
+            lastPosition = currentPosition;
             
             if (derivative < countsVelocity)
                 out = out + adjustment;
