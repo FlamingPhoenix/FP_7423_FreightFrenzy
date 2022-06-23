@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class AutoBase extends LinearOpMode {
+public class AutoBase extends LinearOpMode {//TODO change autobase and specific auto subclasses to iterative op mode
     DcMotor fr;
     DcMotor fl;
     DcMotor br;
