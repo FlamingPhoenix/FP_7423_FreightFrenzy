@@ -12,12 +12,21 @@ public class BlueWarehouse extends AutoBase {
     public void runOpMode() throws InterruptedException {
         Log.i("[phoenix:init]", "Initialize");
         initialize();
+        int duckPos = 2;
         Log.i("[phoenix:afterInit]", "After Initialize");
+        while (!isStarted()) {
+            /*do stuff while waiting for start
+            waitForStart method remains to prevent errors from crashing the phone and control hub
+            */
+            duckPos = imageNavigation.getDuckies();
+            telemetry.addData("ducky: %d", duckPos);
+            telemetry.update();
+            sleep(10);
+        }//test first before generalizing loop to other subclasses
         waitForStart();
         Log.i("[phoenix:started]", "Started");
 
-        int duckPos = 2;
-
+/*
         long startTime = System.currentTimeMillis();
 
         while (System.currentTimeMillis() < startTime + 1000) {
@@ -26,7 +35,7 @@ public class BlueWarehouse extends AutoBase {
             telemetry.update();
             sleep(10);
         }
-
+*/
         OnStart();
 
         Turn(0.5f, 125, Direction.COUNTERCLOCKWISE, imu);

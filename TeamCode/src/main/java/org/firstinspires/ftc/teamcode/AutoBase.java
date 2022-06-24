@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class AutoBase extends LinearOpMode {//TODO change autobase and specific auto subclasses to iterative op mode
+public class AutoBase extends LinearOpMode {
     DcMotor fr;
     DcMotor fl;
     DcMotor br;
@@ -170,7 +170,7 @@ public class AutoBase extends LinearOpMode {//TODO change autobase and specific 
 
                 currentangle = imu.getAdjustedAngle();
 
-                Log.i("[pheonix:angleInfo]", String.format("startingAngle = %f, targetAngl = %f, currentAngle = %f", startOrientation.firstAngle, targetangle, currentangle));
+                Log.i("[phoenix:angleInfo]", String.format("startingAngle = %f, targetAngle = %f, currentAngle = %f", startOrientation.firstAngle, targetangle, currentangle));
 
                 fl.setPower(-power);
                 bl.setPower(-power);
@@ -668,7 +668,7 @@ public class AutoBase extends LinearOpMode {//TODO change autobase and specific 
                 Globals.pulleyEncoder = currentPosition;
                 pulley.setPower(-power);
                 pulley2.setPower(-power);
-                Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
+                Log.i("[phoenix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
             }
         } else if (currentStage < stage) {
             while (currentPosition < targetEncoderValue && opModeIsActive()) {
@@ -676,7 +676,7 @@ public class AutoBase extends LinearOpMode {//TODO change autobase and specific 
                 Globals.pulleyEncoder = currentPosition;
                 pulley.setPower(power);
                 pulley2.setPower(power);
-                Log.i("[pheonix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
+                Log.i("[phoenix:pulleyInfo]", String.format("currentPulley = %d", currentPosition));
             }
             vposR = 0.2f;
             vbarRight.setPosition(vposR);
@@ -807,7 +807,7 @@ public class AutoBase extends LinearOpMode {//TODO change autobase and specific 
         while (currentPosition < reference && opModeIsActive()) {
             currentPosition = Math.abs(bl.getCurrentPosition());
             float error = reference - currentPosition;
-            double derivative = (error - lastError)/timer.seconds();//derivatives are instantanteous rates of change; this is a difference quotient - essentially just a slope formula
+            double derivative = (error - lastError)/timer.seconds();//derivatives are instantaneous rates of change; this is a difference quotient - essentially just a slope formula
             integralSum = integralSum + (error*timer.seconds());//integral through riemann sums - approximating area under the curve with a bunch of rectangles
             out = (float)((Kp*error)+(Ki*error)+(Kd*derivative));
             
