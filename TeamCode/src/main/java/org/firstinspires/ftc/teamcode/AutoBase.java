@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class AutoBase extends LinearOpMode {
+public abstract class AutoBase extends LinearOpMode {
     DcMotor fr;
     DcMotor fl;
     DcMotor br;
@@ -49,6 +49,8 @@ public class AutoBase extends LinearOpMode {
     public float startHeading;
 
     public int currentStage, currentPosition;
+
+    DcMotor[] driveMotors = {fr, fl, br, bl};
 
     public void initialize (){
         fr = hardwareMap.dcMotor.get("frontright");
@@ -98,7 +100,7 @@ public class AutoBase extends LinearOpMode {
         pulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         pulley2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        imu = new MyIMU(hardwareMap);
+        MyIMU imu = new MyIMU(hardwareMap);
         BNO055IMU.Parameters p = new BNO055IMU.Parameters();
         imu.initialize(p);
 
@@ -113,10 +115,9 @@ public class AutoBase extends LinearOpMode {
     }
 
     public void StopAll() {
-        fl.setPower(0);
-        fr.setPower(0);
-        bl.setPower(0);
-        br.setPower(0);
+        for (DcMotor motor : driveMotors) {
+            motor.setPower(0);
+        }
     }
 
     public void Drive (float power, float distance, Direction d) {
@@ -131,16 +132,14 @@ public class AutoBase extends LinearOpMode {
         while (currentPosition < targetEncoderValue && opModeIsActive()) {
             currentPosition = Math.abs(bl.getCurrentPosition());
             if (d == Direction.FORWARD) {
-                fl.setPower(power);
-                fr.setPower(power);
-                bl.setPower(power);
-                br.setPower(power);
+                for (DcMotor motor : driveMotors) {
+                    motor.setPower(power);
+                }
             }
             if (d == Direction.BACKWARD) {
-                fl.setPower(-power);
-                fr.setPower(-power);
-                bl.setPower(-power);
-                br.setPower(-power);
+                for (DcMotor motor : driveMotors) {
+                    motor.setPower(-power);
+                }
             }
         }
 
@@ -397,10 +396,9 @@ public class AutoBase extends LinearOpMode {
         int currentTime = 0;
 
         carousel.setPower(-power);
-        fr.setPower(-0.1);
-        fl.setPower(-0.1);
-        br.setPower(-0.1);
-        bl.setPower(-0.1);
+        for (DcMotor motor : driveMotors) {
+            motor.setPower(-0.1);
+        }
 
         sleep(targetTime);
 //        while (currentPosition < targetEncoderValue && opModeIsActive()) {
@@ -512,11 +510,6 @@ public class AutoBase extends LinearOpMode {
                 brp = power;
 
                 setMaxPower(flp, frp, blp, brp);
-
-                fr.setPower(frp);
-                fl.setPower(flp);
-                bl.setPower(blp);
-                br.setPower(brp);
             }
         }
         StopAll();
@@ -528,11 +521,6 @@ public class AutoBase extends LinearOpMode {
                 brp = -power;
 
                 setMaxPower(flp, frp, blp, brp);
-
-                fr.setPower(frp);
-                fl.setPower(flp);
-                bl.setPower(blp);
-                br.setPower(brp);
             }
         }
         StopAll();
@@ -837,7 +825,7 @@ public class AutoBase extends LinearOpMode {
 
     }
     
-    public void velocityControl (float velocity, int totalTime) { //controls velocity of robot in inches/seconds
+    public void velocityControl (float velocity, int totalTime, DcMotor dcmotor) { //controls velocity of robot in inches/seconds
         
         float out = 0;
         
@@ -845,8 +833,8 @@ public class AutoBase extends LinearOpMode {
 
         ElapsedTime timer = new ElapsedTime();
 
-        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        dcmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        dcmotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         
         int currentPosition;
         int lastPosition = 0;
@@ -855,7 +843,7 @@ public class AutoBase extends LinearOpMode {
 
         while (time < totalTime && opModeIsActive()) {
             
-            currentPosition = Math.abs(bl.getCurrentPosition());
+            currentPosition = Math.abs(dcmotor.getCurrentPosition());
                         
             double derivative = (currentPosition - lastPosition)/timer.seconds();
             
@@ -863,8 +851,8 @@ public class AutoBase extends LinearOpMode {
             
             if (derivative < countsVelocity)
                 out = out + adjustment;
-            
-            setMaxPower(out, out, out, out);
+
+            dcmotor.setPower(out);
             
             time = time + timer.seconds();
             
@@ -874,5 +862,6 @@ public class AutoBase extends LinearOpMode {
         StopAll();
 
     }
+
 
 }
