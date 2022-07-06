@@ -11,7 +11,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Disabled
-public class ConceptCV extends OpenCvPipeline {
+public class MainPipeline extends OpenCvPipeline {
     ShippingElementPosition position = ShippingElementPosition.LEFT;//assumed shipping element position
     public enum ShippingElementPosition
     {

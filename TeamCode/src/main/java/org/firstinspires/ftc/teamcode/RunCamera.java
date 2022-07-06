@@ -18,7 +18,7 @@ public class RunCamera extends LinearOpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "specialCamera"), cameraMonitorViewId);
 
-        ConceptCV myPipeline = new ConceptCV();
+        MainPipeline myPipeline = new MainPipeline();
         webcam.setPipeline(myPipeline);
 
         OpenCvWebcam finalWebcam = webcam;
@@ -40,11 +40,11 @@ public class RunCamera extends LinearOpMode {
 
         while (!isStarted() && !isStopRequested())
         {
-            if (myPipeline.position == ConceptCV.ShippingElementPosition.LEFT)
+            if (myPipeline.position == MainPipeline.ShippingElementPosition.LEFT)
                 telemetry.addData("Realtime analysis: Left ", 0);
-            if (myPipeline.position == ConceptCV.ShippingElementPosition.CENTER)
+            if (myPipeline.position == MainPipeline.ShippingElementPosition.CENTER)
                 telemetry.addData("Realtime analysis: Center ", 0);
-            if (myPipeline.position == ConceptCV.ShippingElementPosition.RIGHT)
+            if (myPipeline.position == MainPipeline.ShippingElementPosition.RIGHT)
                 telemetry.addData("Realtime analysis: Right ", 0);
             telemetry.update();
             sleep(50);
