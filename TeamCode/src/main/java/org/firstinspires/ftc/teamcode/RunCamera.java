@@ -10,7 +10,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous(name="RunCamera", group = "none")
-public class RunCamera extends LinearOpMode {
+public class RunCamera extends LinearOpMode {//this is the opmode that does the stuff; the subclass that utilizes the pipeline to actually do stuff
 
     @Override
     public void runOpMode() throws InterruptedException {
