@@ -10,17 +10,9 @@ public class RedDuck extends AutoBase {
     @Override
     public void runOpMode() throws InterruptedException {
         initialize();
-        waitForStart();
-        int duckPos = 2;
-        long startTime = System.currentTimeMillis();
-
-        while (System.currentTimeMillis() < startTime + 1000) {
-            duckPos = imageNavigation.getDuckies();
-            telemetry.addData("ducky: %d", duckPos);
-            telemetry.update();
-            sleep(10);
-        }
-        OnStart();
+        int duckPos;
+        duckPos = useCamera();
+        OnStart(duckPos);
 
         Turn(0.5f, 115, Direction.COUNTERCLOCKWISE, imu);
 

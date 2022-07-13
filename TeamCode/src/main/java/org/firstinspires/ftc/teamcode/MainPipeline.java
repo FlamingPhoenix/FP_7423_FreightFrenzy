@@ -13,8 +13,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 @Disabled
 public class MainPipeline extends OpenCvPipeline {
     ShippingElementPosition position = ShippingElementPosition.LEFT;//assumed shipping element position
-    public enum ShippingElementPosition
-    {
+    public enum ShippingElementPosition {
         LEFT,
         CENTER,
         RIGHT

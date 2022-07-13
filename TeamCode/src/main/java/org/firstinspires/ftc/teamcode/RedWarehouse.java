@@ -4,6 +4,12 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
+
 @Autonomous(name="RedWarehouse", group = "none")
 
 public class RedWarehouse extends AutoBase {
@@ -12,22 +18,12 @@ public class RedWarehouse extends AutoBase {
     public void runOpMode() throws InterruptedException {
         Log.i("[phoenix:init]", "Initialize");
         initialize();
+        int duckPos;
         Log.i("[phoenix:afterInit]", "After Initialize");
-        waitForStart();
+        duckPos = useCamera();
         Log.i("[phoenix:started]", "Started");
 
-        int duckPos = 2;
-
-        long startTime = System.currentTimeMillis();
-
-        while (System.currentTimeMillis() < startTime + 1000) {
-            duckPos = imageNavigation.getDuckies();
-            telemetry.addData("ducky: %d", duckPos);
-            telemetry.update();
-            sleep(10);
-        }
-
-        OnStart();
+        OnStart(duckPos);
 
         Turn(0.5f, 125, Direction.CLOCKWISE, imu);
 

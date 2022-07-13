@@ -12,8 +12,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 public abstract class AutoBase extends LinearOpMode {
     DcMotor fr;
@@ -686,30 +691,38 @@ public abstract class AutoBase extends LinearOpMode {
 
     }
 
-    public void OnStart() {
-        Drive(0.5f, 5, Direction.BACKWARD);
+    public void OnStart(int duck) {
+        switch (duck) {
+            case 0:
+                break;
+            case 1:
+                break;//need to test code before actually tuning this auto version to work
+            case 2:
+                Drive(0.5f, 5, Direction.BACKWARD);
 
-        finger.setPosition(0.3f);
-        vbarRight.setPosition(0.78f);
-        while (pulley.getCurrentPosition() < 85) {
-            pulley.setPower(0.8f);
-            pulley2.setPower(0.8f);
+                finger.setPosition(0.3f);
+                vbarRight.setPosition(0.78f);
+                while (pulley.getCurrentPosition() < 85) {
+                    pulley.setPower(0.8f);
+                    pulley2.setPower(0.8f);
+                }
+                pulley.setPower(0);
+                pulley2.setPower(0);
+                intakeRight.setPosition(0.71f);
+                sweeper.setPower(0.7f);
+                sleep(1000);
+                while (pulley.getCurrentPosition() > 0) {
+                    pulley.setPower(-0.5f);
+                    pulley2.setPower(-0.5f);
+                }
+                pulley.setPower(0);
+                pulley2.setPower(0);
+                sweeper.setPower(0);
+                vbarRight.setPosition(0.8f);
+                sleep(100);
+                finger.setPosition(0.60);
+
         }
-        pulley.setPower(0);
-        pulley2.setPower(0);
-        intakeRight.setPosition(0.71f);
-        sweeper.setPower(0.7f);
-        sleep(1000);
-        while (pulley.getCurrentPosition() > 0) {
-            pulley.setPower(-0.5f);
-            pulley2.setPower(-0.5f);
-        }
-        pulley.setPower(0);
-        pulley2.setPower(0);
-        sweeper.setPower(0);
-        vbarRight.setPosition(0.8f);
-        sleep(100);
-        finger.setPosition(0.60);
     }
 
     public void Intake(float power){
@@ -860,6 +873,53 @@ public abstract class AutoBase extends LinearOpMode {
         }
 
         StopAll();
+
+    }
+
+    public int useCamera () {
+        int duckPosition = 2;
+        OpenCvWebcam webcam;
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "specialCamera"), cameraMonitorViewId);
+
+        MainPipeline myPipeline = new MainPipeline();
+        webcam.setPipeline(myPipeline);
+
+        OpenCvWebcam finalWebcam = webcam;
+        finalWebcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                finalWebcam.startStreaming(1920 ,1080, OpenCvCameraRotation.UPRIGHT);
+                telemetry.addData("Initialization passed ", 1);
+                telemetry.update();
+            }
+            @Override
+            public void onError(int errorCode) {
+                telemetry.addData("Init Failed ", errorCode);
+                telemetry.update();
+            }
+        });
+
+        //replaces init-loop
+
+        while (!isStarted() && !isStopRequested())
+        {
+            if (myPipeline.position == MainPipeline.ShippingElementPosition.LEFT) {
+                telemetry.addData("Realtime analysis: Left ", duckPosition);
+            }
+            if (myPipeline.position == MainPipeline.ShippingElementPosition.CENTER) {
+                duckPosition = 1;
+                telemetry.addData("Realtime analysis: Center ", duckPosition);
+            }
+            if (myPipeline.position == MainPipeline.ShippingElementPosition.RIGHT) {
+                duckPosition = 0;
+                telemetry.addData("Realtime analysis: Right ", duckPosition);
+            }
+            telemetry.update();
+            sleep(50);
+        }
+
+        return duckPosition;
 
     }
 
